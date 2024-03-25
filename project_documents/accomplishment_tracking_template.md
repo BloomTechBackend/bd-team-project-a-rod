@@ -1,4 +1,4 @@
-# [Your Name] - [Team name] Accomplishment Tracking
+# Alexander Rodriguez-Zingg - A-Rod Accomplishment Tracking
 
 Each team member should have their own version of this document.
 

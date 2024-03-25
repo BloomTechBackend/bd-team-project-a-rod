@@ -1,4 +1,4 @@
-# [team name] Team Charter
+# A-Rod Team Charter
 
 ## Instructions
 

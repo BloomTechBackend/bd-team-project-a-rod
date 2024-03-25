@@ -1,4 +1,4 @@
-# [Team Name] Project Rubric
+# A-Rod Project Rubric
 
 ## Background
 

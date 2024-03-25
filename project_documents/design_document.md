@@ -1,4 +1,4 @@
-# [team name] Design Document
+# A-Rod Design Document
 
 ## Instructions
 
