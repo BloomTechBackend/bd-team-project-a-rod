@@ -1,0 +1,58 @@
+@startuml
+title Get Handicap
+
+actor Client
+participant "API Gateway" as APIGateway
+participant Lambda
+participant GetHandicapActivity
+participant UserDao
+participant ScoreDao
+participant HandicapCalculator
+database DynamoDB
+
+Client -> APIGateway : GET /golfcalculator/{id}/scores
+activate Client
+APIGateway -> Lambda
+activate Lambda
+Lambda -> GetHandicapActivity : handleRequest(GetHandicapRequest, Context)
+activate GetHandicapActivity
+GetHandicapActivity -> UserDao : isEligibleForHandicap(userId)
+activate UserDao
+UserDao -> DynamoDB : load(userId)
+
+alt if userId doesn't exist
+    UserDao <-- DynamoDB : null
+    GetHandicapActivity <-- UserDao : throw UserNotFoundException
+    Lambda <-- GetHandicapActivity : throw UserNotFoundException
+    APIGateway <-- Lambda
+    Client <-- APIGateway : 4xx Response
+    else if minimum games not played
+    UserDao <-- DynamoDB : User (gamesPlayed < 20)
+    GetHandicapActivity <-- UserDao : false
+    Lambda <-- GetHandicapActivity : throw MinimumGamesNotPlayedException
+    APIGateway <-- Lambda
+    Client <-- APIGateway : 4xx Response
+    else otherwise, continue
+    end
+
+UserDao <-- DynamoDB : User (gamesPlayed >= 20)
+GetHandicapActivity <-- UserDao : true
+deactivate UserDao
+GetHandicapActivity -> ScoreDao : getLast20Handicaps(userId)
+activate ScoreDao
+ScoreDao -> DynamoDB : queryLast20Games
+ScoreDao <-- DynamoDB : last20Games
+GetHandicapActivity <-- ScoreDao : Score[]
+deactivate ScoreDao
+GetHandicapActivity -> HandicapCalculator : calculateHandicap(Score[])
+activate HandicapCalculator
+GetHandicapActivity <-- HandicapCalculator : int handicap
+deactivate HandicapCalculator
+Lambda <-- GetHandicapActivity : GetHandicapResult
+deactivate GetHandicapActivity
+APIGateway <-- Lambda
+deactivate Lambda
+Client <-- APIGateway : 200 Response
+deactivate Client
+
+@enduml
