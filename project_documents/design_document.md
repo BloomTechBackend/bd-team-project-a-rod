@@ -1,19 +1,6 @@
 # A-Rod Design Document
 
-## Instructions
-
-*Save a copy of this template for your team in the same folder that contains
-this template.*
-
-*Replace italicized text (including this text!) with details of the design you
-are proposing for your team project. (Your replacement text shouldn't be in
-italics)*
-
-*You should take a look at the example design document in the same folder as
-this template for more guidance on the types of information to capture, and the
-level of detail to aim for.*
-
-## *Project Title* Design
+## Golf Handicap Score Calculator Design
 
 ## 1. Problem Statement
 
@@ -24,18 +11,11 @@ This allows players to determine how well they played regardless of the difficul
 
 ## 2. Top Questions to Resolve in Review
 
-*List the most important questions you have about your design, or things that
-you are still debating internally that you might like help working through.*
-
-1.   
-2.   
-3.  
+1.   I will need to figure out exactly how I want to store date/time of scores, such as what format, for DyanamoDB.
+2.   Need to know how to query, so I can extract the right amount of scores, in descending order sorted by date/time, associated with the same userId.
+3.  Will need to figure out how to create my html site, and how to make it leverage the APIs automatically, so the User doesn't need to know how to code, as I've only learned how to manually use APIs through the commandline, but obviously this needs to be programmed within the html site I'm assuming.
 
 ## 3. Use Cases
-
-*This is where we work backwards from the customer and define what our customers
-would like to do (and why). You may also include use cases for yourselves, or
-for the organization providing the product to customers.*
 
 U1. As a customer, I should be able to make an account, with a username and email, 
 to be able to keep track of my scores overtime and retrieve them.
@@ -47,13 +27,13 @@ U3. As a customer, I want to be able to view my overall current handicap when I
 select "view current handicap", which is officially determined by calculating the average 
 of the 8 best handicaps from the last 20 played games.
 
-U4. As a customer, I want to view my last 10 handicap scores when I select 
+U4. As a customer, I want to view my last 5 handicap scores when I select 
 "view latest handicaps".
 
 ## 4. Project Scope
 
 I want users to be able to see the handicap of the game they just played, their overall
-handicap (best 8 of last 20 games), and their last 10 handicaps.
+handicap (best 8 of last 20 games), and their last 5 handicaps.
 
 ### 4.1. In Scope
 
@@ -66,12 +46,19 @@ I would like to add some analytics, such as a graph to visualize performance ove
 and this can be expanded further to choose the time horizon that you want to visualize 
 your performance such as: last month, last 3 months, 6 months, year, or overall. I would 
 also like to add the ability to track performance for each golf course, with a graph 
-available for that too. Also, currently users would have to manually figure out and plug
+available for that too. 
+
+Also, currently users would have to manually figure out and plug
 in the course and slope ratings of the course they played at, and in the future I would
 like to have that information stored for all golf courses, so that users only have to
-worry about plugging in their score, making it easier. I think just simply making the 
-website look organized, pretty, and colorful and adding as much cool analytical and visual
-features as possible would make my app more fun to use. 
+worry about plugging in their score, making it easier. 
+
+I think just simply making the website look organized, pretty, and colorful 
+and adding as much cool analytical and visual features as possible would make 
+my app more fun to use. 
+
+Also a dropdown feature to put recent golf courses submitted so users don't
+have to manually rewrite the same golf course names everytime. 
 
 # 5. Proposed Architecture Overview
 
@@ -90,46 +77,60 @@ features as possible would make my app more fun to use.
 
 ## 6.1. Public Models
 
-*Define the data models your service will expose in its responses via your
-*`-Model`* package. These will be equivalent to the *`PlaylistModel`* and
-*`SongModel`* from the Unit 3 project.*
-
 - UserModel: userId, email, gamesPlayed.
 - ScoreModel: userId, date, courseName, standardizedScore
 
-## 6.2. *First Endpoint*
+## 6.2. *First Endpoint* GetHandicapActivity
 
-*Describe the behavior of the first endpoint you will build into your service
-API. This should include what data it requires, what data it returns, and how it
-will handle any known failure cases. You should also include a sequence diagram
-showing how a user interaction goes from user to website to service to database,
-and back. This first endpoint can serve as a template for subsequent endpoints.
-(If there is a significant difference on a subsequent endpoint, review that with
-your team before building it!)*
+Only data required to initiate is the userId. Official handicap scores require
+at least 20 games played, so first we will use the UserDao to check that the
+user exists in the UserTable. Then, we will make sure that gamesPlayed attribute
+is >= 20. If not then either UserNotFoundException or 
+MinimumGamesNotPlayedException will get triggered, and the user will get a
+400 response. 
+
+If the user is eligible for an official handicap calculation, then the 
+ScoreDao will query the last 20 scores associated with the userId from the
+ScoresTable. Then the 8 best scores will be extracted, then averaged, then
+returned to the User with a 200 response. 
+
+![img_2.png](img_2.png)
 
 *(You should have a separate section for each of the endpoints you are expecting
 to build...)*
 
-## 6.3 *Second Endpoint*
+## 6.3 *Second Endpoint* GetLatestGamesActivity
 
-*(repeat, but you can use shorthand here, indicating what is different, likely
-primarily the data in/out and error conditions. If the sequence diagram is
-nearly identical, you can say in a few words how it is the same/different from
-the first endpoint)*
+This endpoint is very similar to GetHandicapActivity that we discussed in the
+last section. Just like before we only need the userId, and we can throw
+a UserNotFoundException. There is also still a MinimumGamesNotPlayedException,
+but the difference is only 1 game is required rather than 20. However, it will
+return up to 5 of the latest games if possible. 
+
+No calculations will be required, but we will need to leverage the ModelConverter
+to convert Score objects to ScoreModel objects, as there is a lot more 
+information stored in the ScoreTable than we need to show to the User. Then,
+we can insert the ScoreModels into the GetLatestGamesResults that will be
+returned to the User with a 200 response code. 
 
 # 7. Tables
 
-*Define the DynamoDB tables you will need for the data your service will use. It
-may be helpful to first think of what objects your service will need, then
-translate that to a table structure, like with the *`Playlist` POJO* versus the
-`playlists` table in the Unit 3 project.*
+UserTable (Stores the User class attributes):
+- userId : String, partition key
+- email : String
+- gamesPlayed : int
+
+ScoresTable (Stores the Score class attributes):
+- userId : String, partition key
+- date : date/time object, sort key
+- standardizedScore : int
+- rawScore : int
+- courseName : String
+- courseRating : int
+- slopeRating : int
 
 # 8. Pages
 
-*Include mock-ups of the web pages you expect to build. These can be as
-sophisticated as mockups/wireframes using drawing software, or as simple as
-hand-drawn pictures that represent the key customer-facing components of the
-pages. It should be clear what the interactions will be on the page, especially
-where customers enter and submit data. You may want to accompany the mockups
-with some description of behaviors of the page (e.g. “When customer submits the
-submit-dog-photo button, the customer is sent to the doggie detail page”)*
+![img_3.png](img_3.png)
+![img_4.png](img_4.png)
+![img_5.png](img_5.png)
