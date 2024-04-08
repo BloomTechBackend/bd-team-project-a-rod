@@ -1,0 +1,58 @@
+@startuml
+
+title Get Latest Games
+
+actor Client
+participant "API Gateway" as APIGateway
+participant Lambda
+participant CreateUserActivity
+participant UserDao
+participant ScoreDao
+participant ModelConverter
+database DynamoDB
+
+Client -> APIGateway : POST /golfcalculator
+activate Client
+APIGateway -> Lambda
+activate Lambda
+Lambda -> CreateUserActivity : handleRequest(CreateUserRequest, Context)
+activate CreateUserActivity
+CreateUserActivity -> UserDao : doesUserExistAlready(userId, email)
+activate UserDao
+UserDao -> DynamoDB : load(userId), scan(email)
+
+alt if userId already exists
+    UserDao <-- DynamoDB : User != null
+    CreateUserActivity <-- UserDao : throw UserIdAlreadyExistsException
+    Lambda <-- CreateUserActivity : throw UserIdAlreadyExistsException
+    APIGateway <-- Lambda
+    Client <-- APIGateway : 4xx Response
+    else if email already exists
+    UserDao <-- DynamoDB : !ScanResult.isEmpty()
+    CreateUserActivity <-- UserDao : throw EmailAlreadyExistsException
+    Lambda <-- CreateUserActivity : throw EmailAlreadyExistsException
+    APIGateway <-- Lambda
+    Client <-- APIGateway : 4xx Response
+    else otherwise, continue
+    end
+
+UserDao <-- DynamoDB : User == null && ScanResult.isEmpty()
+CreateUserActivity <-- UserDao : true
+CreateUserActivity -> UserDao : createNewUser(User = {userId, email, gamesPlayed = 0 to start always})
+UserDao -> DynamoDB : save(User)
+UserDao <-- DynamoDB
+CreateUserActivity <-- UserDao : User
+deactivate UserDao
+CreateUserActivity -> ModelConverter : convertToUserModel(user)
+activate ModelConverter
+CreateUserActivity <-- ModelConverter : UserModel
+deactivate ModelConverter
+
+Lambda <-- CreateUserActivity : CreateUserResult
+deactivate CreateUserActivity
+APIGateway <-- Lambda
+deactivate Lambda
+Client <-- APIGateway : 200 Response
+deactivate Client
+
+@enduml

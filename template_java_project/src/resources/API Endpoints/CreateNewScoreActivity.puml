@@ -1,0 +1,62 @@
+@startuml
+title Create New Score
+
+actor Client
+participant APIGateway as "API Gateway"
+participant Lambda
+participant CreateNewScoreActivity
+participant UserDao
+participant ScoreDao
+participant HandicapCalculator
+participant ModelConverter
+participant DynamoDB
+
+Client -> APIGateway : POST /golfcalculator/{id}/scores
+activate Client
+APIGateway -> Lambda
+activate Lambda
+Lambda -> CreateNewScoreActivity : handleRequest(CreateNewScoreRequest, Context)
+activate CreateNewScoreActivity
+CreateNewScoreActivity -> UserDao : doesUserExist(userId)
+activate UserDao
+UserDao -> DynamoDB : load(userId)
+
+alt if user doesn't exist
+    UserDao <-- DynamoDB : null
+    CreateNewScoreActivity <-- UserDao : throw UserNotFoundException
+    Lambda <-- CreateNewScoreActivity : throw UserNotFoundException
+    APIGateway <-- Lambda
+    Client <-- APIGateway : 4xx Response
+    else otherwise, continue
+    end
+
+UserDao <-- DynamoDB : User
+CreateNewScoreActivity <-- UserDao : User
+CreateNewScoreActivity -> UserDao : incrementGamesPlayed(user)
+UserDao -> DynamoDB : save(User)
+UserDao <-- DynamoDB
+CreateNewScoreActivity <-- UserDao
+deactivate UserDao
+CreateNewScoreActivity -> HandicapCalculator : calculateSingleHandicap(rawScore, courseRating, slopeRating)
+activate HandicapCalculator
+CreateNewScoreActivity <-- HandicapCalculator : handicapScore
+deactivate HandicapCalculator
+CreateNewScoreActivity -> ScoreDao : createNewScore(Score)
+activate ScoreDao
+ScoreDao -> DynamoDB : save(Score)
+ScoreDao <-- DynamoDB
+CreateNewScoreActivity <-- ScoreDao : Score
+deactivate ScoreDao
+CreateNewScoreActivity -> ModelConverter : toScoreModel(Score)
+activate ModelConverter
+CreateNewScoreActivity <-- ModelConverter : ScoreModel
+deactivate ModelConverter
+
+Lambda <-- CreateNewScoreActivity : CreateNewScoreResult
+deactivate CreateNewScoreActivity
+APIGateway <-- Lambda
+deactivate Lambda
+Client <-- APIGateway : 200 Response
+deactivate Client
+
+@enduml

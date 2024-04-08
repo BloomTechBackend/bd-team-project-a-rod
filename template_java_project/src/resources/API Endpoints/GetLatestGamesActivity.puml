@@ -1,0 +1,59 @@
+@startuml
+title Get Latest Games
+
+actor Client
+participant "API Gateway" as APIGateway
+participant Lambda
+participant GetLatestGamesActivity
+participant UserDao
+participant ScoreDao
+participant ModelConverter
+database DynamoDB
+
+Client -> APIGateway : GET /golfcalculator/{id}/scores
+activate Client
+APIGateway -> Lambda
+activate Lambda
+Lambda -> GetLatestGamesActivity : handleRequest(GetLatestGamesRequest, Context)
+activate GetLatestGamesActivity
+GetLatestGamesActivity -> UserDao : getGamesPlayed(userId)
+activate UserDao
+UserDao -> DynamoDB : load(userId)
+
+alt if userId doesn't exist
+    UserDao <-- DynamoDB : null
+    GetLatestGamesActivity <-- UserDao : throw UserNotFoundException
+    Lambda <-- GetLatestGamesActivity : throw UserNotFoundException
+    APIGateway <-- Lambda
+    Client <-- APIGateway : 4xx Response
+    else if minimum games not played
+    UserDao <-- DynamoDB : User (gamesPlayed == 0)
+    GetLatestGamesActivity <-- UserDao : false
+    Lambda <-- GetLatestGamesActivity : throw MinimumGamesNotPlayedException
+    APIGateway <-- Lambda
+    Client <-- APIGateway : 4xx Response
+    else otherwise, continue
+    end
+
+UserDao <-- DynamoDB : User (gamesPlayed >= 1)
+GetLatestGamesActivity <-- UserDao : true
+deactivate UserDao
+GetLatestGamesActivity -> ScoreDao : getLatest5Games(userId)
+activate ScoreDao
+ScoreDao -> DynamoDB : queryLatest5Games
+ScoreDao <-- DynamoDB : last5Games
+GetLatestGamesActivity <-- ScoreDao : Score[]
+deactivate ScoreDao
+GetLatestGamesActivity -> ModelConverter : convertToScoreModel(Score[])
+activate ModelConverter
+GetLatestGamesActivity <-- ModelConverter : ScoreModel[]
+deactivate ModelConverter
+
+Lambda <-- GetLatestGamesActivity : GetLatestGamesResult
+deactivate GetLatestGamesActivity
+APIGateway <-- Lambda
+deactivate Lambda
+Client <-- APIGateway : 200 Response
+deactivate Client
+
+@enduml
