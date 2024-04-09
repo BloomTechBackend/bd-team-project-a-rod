@@ -78,7 +78,7 @@ have to manually rewrite the same golf course names everytime.
 ## 6.1. Public Models
 
 - UserModel: userId, email, gamesPlayed.
-- ScoreModel: userId, date, courseName, standardizedScore
+- ScoreModel: userId, date, courseName, handicapIndex
 
 ## 6.2. *First Endpoint* GetHandicapActivity
 
@@ -95,6 +95,9 @@ ScoresTable. Then the 8 best scores will be extracted, then averaged, then
 returned to the User with a 200 response. 
 
 ![img_2.png](img_2.png)
+![img_6.png](img_6.png)
+![img_7.png](img_7.png)
+![img_10.png](img_10.png)
 
 *(You should have a separate section for each of the endpoints you are expecting
 to build...)*

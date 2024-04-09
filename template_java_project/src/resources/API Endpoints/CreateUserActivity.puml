@@ -1,6 +1,6 @@
 @startuml
 
-title Get Latest Games
+title Create New User
 
 actor Client
 participant "API Gateway" as APIGateway
