@@ -77,8 +77,8 @@ have to manually rewrite the same golf course names everytime.
 
 ## 6.1. Public Models
 
-- UserModel: userId, email, gamesPlayed.
-- ScoreModel: userId, date, courseName, handicapIndex
+- UserModel: userId, email
+- ScoreModel: userId, dateTime, handicapIndex
 
 ## 6.2. *First Endpoint* GetHandicapActivity
 
