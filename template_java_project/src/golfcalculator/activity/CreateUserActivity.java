@@ -32,7 +32,7 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
         String email = createUserRequest.getEmail();
 
         try {
-            userDao.isValidUserId(createUserRequest.getId());
+            userDao.isUnusedUserId(createUserRequest.getId());
         } catch (UserIdAlreadyExistsException ex) {
             throw new UserIdAlreadyExistsException("User Id already exists!");
         }
@@ -45,6 +45,7 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
         User user = new User();
         user.setUserId(userId);
         user.setEmail(email);
+        user.setGamesPlayed(0);
         userDao.saveUser(user);
 
         return CreateUserResult.builder()

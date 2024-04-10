@@ -12,7 +12,7 @@ public class Score {
     private int rawScore;
     private double courseRating;
     private double slopeRating;
-    private double handicapIndex;
+    private double handicapDifferential;
     private String courseName;
 
     @DynamoDBHashKey(attributeName = "userId")
@@ -60,13 +60,13 @@ public class Score {
         this.slopeRating = slopeRating;
     }
 
-    @DynamoDBAttribute(attributeName = "handicapIndex")
-    public double getHandicapIndex() {
-        return handicapIndex;
+    @DynamoDBAttribute(attributeName = "handicapDifferential")
+    public double getHandicapDifferential() {
+        return handicapDifferential;
     }
 
-    public void setHandicapIndex(double handicapIndex) {
-        this.handicapIndex = handicapIndex;
+    public void setHandicapDifferential(double handicapDifferential) {
+        this.handicapDifferential = handicapDifferential;
     }
 
     @DynamoDBAttribute(attributeName = "courseName")

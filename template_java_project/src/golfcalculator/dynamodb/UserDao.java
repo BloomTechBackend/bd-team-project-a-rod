@@ -3,6 +3,7 @@ package golfcalculator.dynamodb;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import golfcalculator.dynamodb.models.User;
 import golfcalculator.exceptions.UserIdAlreadyExistsException;
+import golfcalculator.exceptions.UserNotFoundException;
 
 import javax.inject.Inject;
 
@@ -20,15 +21,24 @@ public class UserDao {
     }
 
     /**
-     * Returns whether UserId is valid, meaning UserId is not in use.
+     * Returns whether UserId is unused, meaning UserId can be used to create new User.
      * @param id the User ID.
      */
-    public void isValidUserId(String id) {
+    public void isUnusedUserId(String id) {
         User user = loadUser(id);
 
         if (user != null) {
             throw new UserIdAlreadyExistsException("User ID already exists!");
         }
+    }
+
+    public User getUser(String userId) {
+        User user = loadUser(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User Account not found!");
+        }
+
+        return user;
     }
 
     public void saveUser(User user) {

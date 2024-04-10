@@ -6,7 +6,7 @@ public class ScoreModel {
 
     private String userId;
     private String dateTime;
-    private double handicapIndex;
+    private double handicapDifferential;
 
     public ScoreModel() {
     }
@@ -14,7 +14,7 @@ public class ScoreModel {
     public ScoreModel(Builder builder) {
         this.userId = builder.userId;
         this.dateTime = builder.dateTime;
-        this.handicapIndex = builder.handicapIndex;
+        this.handicapDifferential = builder.handicapDifferential;
     }
 
     public static Builder builder() {return new Builder(); }
@@ -22,7 +22,7 @@ public class ScoreModel {
     public static final class Builder {
         private String userId;
         private String dateTime;
-        private double handicapIndex;
+        private double handicapDifferential;
 
         public Builder withUserId(String idToUse) {
             this.userId = idToUse;
@@ -34,12 +34,12 @@ public class ScoreModel {
             return this;
         }
 
-        public Builder withHandicapIndex(Double handicapToUse) {
-            this.handicapIndex = handicapToUse;
+        public Builder withHandicapDifferential(Double handicapToUse) {
+            this.handicapDifferential = handicapToUse;
             return this;
         }
 
-        public ScoreModel builder() {return new ScoreModel(this);}
+        public ScoreModel build() {return new ScoreModel(this);}
     }
 
     public String getUserId() {
@@ -58,12 +58,12 @@ public class ScoreModel {
         this.dateTime = dateTime;
     }
 
-    public double getHandicapIndex() {
-        return handicapIndex;
+    public double getHandicapDifferential() {
+        return handicapDifferential;
     }
 
-    public void setHandicapIndex(double handicapIndex) {
-        this.handicapIndex = handicapIndex;
+    public void setHandicapDifferential(double handicapDifferential) {
+        this.handicapDifferential = handicapDifferential;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ScoreModel {
         return "ScoreModel{" +
                 "userId='" + userId + '\'' +
                 ", dateTime='" + dateTime + '\'' +
-                ", handicapIndex=" + handicapIndex +
+                ", handicapDifferential=" + handicapDifferential +
                 '}';
     }
 
@@ -80,11 +80,11 @@ public class ScoreModel {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ScoreModel that = (ScoreModel) o;
-        return Double.compare(that.getHandicapIndex(), getHandicapIndex()) == 0 && Objects.equals(getUserId(), that.getUserId()) && Objects.equals(getDateTime(), that.getDateTime());
+        return Double.compare(that.getHandicapDifferential(), getHandicapDifferential()) == 0 && Objects.equals(getUserId(), that.getUserId()) && Objects.equals(getDateTime(), that.getDateTime());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getDateTime(), getHandicapIndex());
+        return Objects.hash(getUserId(), getDateTime(), getHandicapDifferential());
     }
 }

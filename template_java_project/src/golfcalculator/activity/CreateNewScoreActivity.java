@@ -1,11 +1,22 @@
 package golfcalculator.activity;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import golfcalculator.converters.HandicapCalculator;
+import golfcalculator.converters.ModelConverter;
 import golfcalculator.dynamodb.ScoreDao;
 import golfcalculator.dynamodb.UserDao;
+import golfcalculator.dynamodb.models.Score;
+import golfcalculator.dynamodb.models.User;
+import golfcalculator.exceptions.UserNotFoundException;
+import golfcalculator.models.requests.CreateNewScoreRequest;
+import golfcalculator.models.results.CreateNewScoreResult;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-public class CreateNewScoreActivity {
+public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequest, CreateNewScoreResult> {
 
     private UserDao userDao;
     private ScoreDao scoreDao;
@@ -16,21 +27,41 @@ public class CreateNewScoreActivity {
         this.scoreDao = scoreDao;
     }
 
-//    public ActivityNameResult handleRequest(ActivityNameRequest request, Context context) {
-//        // Capture the current date and time as close to the action as possible
-//        String dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-//
-//        // Now, you might either set this dateTime in the request object,
-//        // Or directly use it in the creation of an object that will be stored in DynamoDB
-//        request.setDateTime(dateTime); // Assuming your request object has a dateTime field
-//
-//        // Process the request...
-//
-//        // For example, create a new Score entry to store in DynamoDB
-//        Score newScore = new Score(request.getScore(), dateTime);
-//        // Code to save newScore to DynamoDB...
-//
-//        // Generate and return the result
-//        return new ActivityNameResult(/* parameters */);
-//    }
+    @Override
+    public CreateNewScoreResult handleRequest(CreateNewScoreRequest createNewScoreRequest, Context context) {
+        String userId = createNewScoreRequest.getUserId();
+        User user;
+        try {
+            user = userDao.getUser(userId);
+        } catch (UserNotFoundException ex) {
+            throw new UserNotFoundException("Could not find User account!");
+        }
+
+        // gathering all Score attributes
+        String dateTime = LocalDate.now().format(DateTimeFormatter.ISO_DATE_TIME);
+        int rawScore = createNewScoreRequest.getRawScore();
+        double courseRating = createNewScoreRequest.getCourseRating();
+        double slopeRating = createNewScoreRequest.getSlopeRating();
+        String courseName = createNewScoreRequest.getCourseName();
+
+        // Get handicapDifferential
+        double handicapDifferential = HandicapCalculator.calculateHandicapDifferential(rawScore,
+                courseRating, slopeRating);
+
+        // Create newScore
+        Score newScore = new Score();
+        newScore.setUserId(userId);
+        newScore.setDateTime(dateTime);
+        newScore.setRawScore(rawScore);
+        newScore.setCourseRating(courseRating);
+        newScore.setSlopeRating(slopeRating);
+        newScore.setHandicapDifferential(handicapDifferential);
+        newScore.setCourseName(courseName);
+
+        scoreDao.saveNewScore(newScore);
+
+        return CreateNewScoreResult.builder()
+                .withScoreModel(ModelConverter.toScoreModel(newScore))
+                .build();
+    }
 }
