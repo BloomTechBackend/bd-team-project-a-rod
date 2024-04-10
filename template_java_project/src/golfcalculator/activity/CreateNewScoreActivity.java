@@ -1,6 +1,20 @@
 package golfcalculator.activity;
 
+import golfcalculator.dynamodb.ScoreDao;
+import golfcalculator.dynamodb.UserDao;
+
+import javax.inject.Inject;
+
 public class CreateNewScoreActivity {
+
+    private UserDao userDao;
+    private ScoreDao scoreDao;
+
+    @Inject
+    public CreateNewScoreActivity(UserDao userDao, ScoreDao scoreDao) {
+        this.userDao = userDao;
+        this.scoreDao = scoreDao;
+    }
 
 //    public ActivityNameResult handleRequest(ActivityNameRequest request, Context context) {
 //        // Capture the current date and time as close to the action as possible

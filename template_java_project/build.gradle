@@ -63,6 +63,10 @@ dependencies {
     // AWS SDK for Java 2.x DynamoDB
     //implementation 'software.amazon.awssdk:dynamodb:2.21.1' // Replace '2.x.x' with the latest version
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.125'
+
+    // Added for using log4j usage
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 }
 
 task buildZip(type: Zip) {
