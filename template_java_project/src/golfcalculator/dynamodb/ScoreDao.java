@@ -32,4 +32,17 @@ public class ScoreDao {
         return dynamoDBMapper.query(Score.class, queryExpression);
     }
 
+    // amount is at least 1 and at most 5
+    public List<Score> getLatest5Games(String userId, int amount) {
+
+        int max5Amount = amount > 5 ? 5 : amount;
+        DynamoDBQueryExpression<Score> queryExpression = new DynamoDBQueryExpression<Score>()
+                .withKeyConditionExpression("userId = :v_userId")
+                .withExpressionAttributeValues(Map.of(":v_userId", new AttributeValue().withS(userId)))
+                .withScanIndexForward(false)
+                .withLimit(max5Amount);
+
+        return dynamoDBMapper.query(Score.class, queryExpression);
+    }
+
 }
