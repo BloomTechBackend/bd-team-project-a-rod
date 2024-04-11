@@ -14,6 +14,8 @@ import golfcalculator.models.results.CreateNewScoreResult;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequest, CreateNewScoreResult> {
@@ -37,8 +39,17 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
             throw new UserNotFoundException("Could not find User account!");
         }
 
+        // increment user gamesPlayed
+        user.setGamesPlayed(user.getGamesPlayed() + 1);
+        userDao.saveUser(user);
+
         // gathering all Score attributes
-        String dateTime = LocalDate.now().format(DateTimeFormatter.ISO_DATE_TIME);
+        // generating UTC datetime String
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime utcNow = now.withZoneSameInstant(ZoneOffset.UTC);
+        String dateTime = utcNow.format(DateTimeFormatter.ISO_DATE_TIME);
+
+
         int rawScore = createNewScoreRequest.getRawScore();
         double courseRating = createNewScoreRequest.getCourseRating();
         double slopeRating = createNewScoreRequest.getSlopeRating();
