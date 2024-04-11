@@ -31,15 +31,19 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
         String userId = createUserRequest.getId();
         String email = createUserRequest.getEmail();
 
-        boolean isUserIdUnused = userDao.isUnusedUserId(createUserRequest.getId());
+        // TODO: Complete verification logic
+        // Need more fitting exception
+        // Need to implement regex for valid username and emails
+        if (userId == null || email == null) {
+            throw new EmailAlreadyExistsException("Email is null!");
+        }
 
-        if (!isUserIdUnused) {
+        if (!userDao.isUnusedUserId(userId)) {
             throw new UserIdAlreadyExistsException("User Id already exists!");
         }
 
-        // TODO: Fix this, we need better logic to check if valid email maybe GSI thing
-        if (createUserRequest.getEmail() == null) {
-            throw new EmailAlreadyExistsException("Email is null!");
+        if (!userDao.isUnusedEmail(email)) {
+            throw new EmailAlreadyExistsException("Email already in use!");
         }
 
         User user = new User();

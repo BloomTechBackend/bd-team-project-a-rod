@@ -1,11 +1,16 @@
 package golfcalculator.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import golfcalculator.dynamodb.models.User;
 import golfcalculator.exceptions.UserIdAlreadyExistsException;
 import golfcalculator.exceptions.UserNotFoundException;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserDao {
 
@@ -31,6 +36,21 @@ public class UserDao {
             return false;
         }
         return true;
+    }
+
+    public boolean isUnusedEmail(String email) {
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":email", new AttributeValue().withS(email));
+
+        DynamoDBQueryExpression<User> queryExpression = new DynamoDBQueryExpression<User>()
+                .withIndexName("EmailIndex")
+                .withConsistentRead(false)
+                .withKeyConditionExpression("email = :email")
+                .withExpressionAttributeValues(eav);
+
+        PaginatedQueryList<User> result = dynamoDBMapper.query(User.class, queryExpression);
+
+        return result.isEmpty();
     }
 
     public User getUser(String userId) {

@@ -2,10 +2,12 @@ package golfcalculator.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import golfcalculator.dynamodb.models.Score;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +31,8 @@ public class ScoreDao {
                 .withScanIndexForward(false) // For descending order by dateTime
                 .withLimit(20);
 
-        return dynamoDBMapper.query(Score.class, queryExpression);
+        PaginatedQueryList<Score> result = dynamoDBMapper.query(Score.class, queryExpression);
+        return new ArrayList<>(result);
     }
 
     // amount is at least 1 and at most 5
@@ -42,6 +45,7 @@ public class ScoreDao {
                 .withScanIndexForward(false)
                 .withLimit(max5Amount);
 
-        return dynamoDBMapper.query(Score.class, queryExpression);
+        PaginatedQueryList<Score> result = dynamoDBMapper.query(Score.class, queryExpression);
+        return new ArrayList<>(result);
     }
 }
