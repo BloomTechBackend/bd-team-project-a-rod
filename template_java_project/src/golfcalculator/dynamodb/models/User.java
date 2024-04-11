@@ -2,10 +2,12 @@ package golfcalculator.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 @DynamoDBTable(tableName = "Users")
 public class User {
+    public static final String EMAIL_INDEX = "EmailIndex";
     private String userId;
     private String email;
     private int gamesPlayed;
@@ -19,7 +21,7 @@ public class User {
         this.userId = userId;
     }
 
-    @DynamoDBAttribute(attributeName = "email")
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = EMAIL_INDEX, attributeName = "email")
     public String getEmail() {
         return email;
     }

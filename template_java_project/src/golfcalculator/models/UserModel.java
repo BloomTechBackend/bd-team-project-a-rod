@@ -1,6 +1,5 @@
 package golfcalculator.models;
 
-import java.util.Locale;
 import java.util.Objects;
 
 public class UserModel {

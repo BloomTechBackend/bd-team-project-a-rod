@@ -44,5 +44,4 @@ public class ScoreDao {
 
         return dynamoDBMapper.query(Score.class, queryExpression);
     }
-
 }

@@ -31,9 +31,9 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
         String userId = createUserRequest.getId();
         String email = createUserRequest.getEmail();
 
-        try {
-            userDao.isUnusedUserId(createUserRequest.getId());
-        } catch (UserIdAlreadyExistsException ex) {
+        boolean isUserIdUnused = userDao.isUnusedUserId(createUserRequest.getId());
+
+        if (!isUserIdUnused) {
             throw new UserIdAlreadyExistsException("User Id already exists!");
         }
 

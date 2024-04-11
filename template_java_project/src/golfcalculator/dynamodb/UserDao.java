@@ -24,12 +24,13 @@ public class UserDao {
      * Returns whether UserId is unused, meaning UserId can be used to create new User.
      * @param id the User ID.
      */
-    public void isUnusedUserId(String id) {
+    public boolean isUnusedUserId(String id) {
         User user = loadUser(id);
 
         if (user != null) {
-            throw new UserIdAlreadyExistsException("User ID already exists!");
+            return false;
         }
+        return true;
     }
 
     public User getUser(String userId) {
