@@ -22,6 +22,11 @@ public class ModelConverter {
                 .build();
     }
 
+    /**
+     * Convert Score to ScoreModel
+     * @param score the object to be converted
+     * @return ScoreModel object
+     */
     public static ScoreModel toScoreModel(Score score) {
         return ScoreModel.builder()
                 .withUserId(score.getUserId())
@@ -30,6 +35,11 @@ public class ModelConverter {
                 .build();
     }
 
+    /**
+     * Leverages toScoreModel() to convert an entire List<Score>
+     * @param scores scores to be converted
+     * @return List<ScoreModel>
+     */
     public static List<ScoreModel> toListScoreModel(List<Score> scores) {
         List<ScoreModel> scoreModels = new ArrayList<>();
         for (Score score : scores) {

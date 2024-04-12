@@ -69,6 +69,13 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 }
 
+test {
+    useJUnitPlatform() // Enables JUnit 5
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
 task buildZip(type: Zip) {
     from compileJava
     from processResources

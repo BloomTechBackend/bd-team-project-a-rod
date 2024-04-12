@@ -21,12 +21,12 @@ public class CreateNewScoreRequest {
         this.courseName = builder.courseName;
     }
 
-    public static Builder build() {return new Builder();}
+    public static Builder builder() {return new Builder();}
     public static class Builder {
         private String userId;
         private int rawScore;
-        private double courseRating;
-        private double slopeRating;
+        private double courseRating = 72.0;
+        private double slopeRating = 113.0;
         private String courseName;
 
         public Builder withUserId(String idToUse) {
@@ -50,7 +50,8 @@ public class CreateNewScoreRequest {
             return this;
         }
 
-        public CreateNewScoreRequest build() {return new CreateNewScoreRequest(this);}
+        public CreateNewScoreRequest build() {
+            return new CreateNewScoreRequest(this);}
     }
 
     public String getUserId() {
