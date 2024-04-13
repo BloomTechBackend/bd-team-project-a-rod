@@ -16,7 +16,7 @@ public class CreateUserRequest {
         this.email = builder.email;
     }
 
-    public Builder builder() {return new Builder();}
+    public static Builder builder() {return new Builder();}
     public static final class Builder {
         private String id;
         private String email;
@@ -31,7 +31,7 @@ public class CreateUserRequest {
             return this;
         }
 
-        public CreateUserRequest builder() {
+        public CreateUserRequest build() {
             return new CreateUserRequest(this);
         }
     }

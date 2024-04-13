@@ -5,7 +5,6 @@ import golfcalculator.dynamodb.UserDao;
 import golfcalculator.dynamodb.models.Score;
 import golfcalculator.dynamodb.models.User;
 import golfcalculator.exceptions.UserNotFoundException;
-import golfcalculator.models.ScoreModel;
 import golfcalculator.models.requests.CreateNewScoreRequest;
 import golfcalculator.models.results.CreateNewScoreResult;
 import org.junit.jupiter.api.BeforeEach;

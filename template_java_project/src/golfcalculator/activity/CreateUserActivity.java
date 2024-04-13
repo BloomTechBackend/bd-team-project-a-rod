@@ -22,20 +22,31 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
     private final Logger log = LogManager.getLogger();
     private final UserDao userDao;
 
+    /**
+     * This is the API endpoint for creating new user accounts.
+     * @param userDao userDao to access the Users table.
+     */
     @Inject
     public CreateUserActivity(UserDao userDao) {
         this.userDao = userDao;
     }
 
+    /**
+     * This method is used to persist a new User object that will be stored on DynamoDB.
+     * @param createUserRequest contains UserId and email that user wishes to use.
+     * @param context The Lambda execution environment context object.
+     * @exception InvalidUserNameException if userId doesn't follow regex pattern.
+     * @exception InvalidEmailException if email doesn't follow regex pattern.
+     * @exception UserIdAlreadyExistsException if userId already exists in Users table.
+     * @exception EmailAlreadyExistsException if email already exists in Users table.
+     * @return {@link CreateUserResult} returns a UserModel: userId, email
+     */
     @Override
     public CreateUserResult handleRequest(final CreateUserRequest createUserRequest, Context context) {
         log.info("Received CreateUserRequest {} ", createUserRequest);
         String userId = createUserRequest.getId();
         String email = createUserRequest.getEmail();
 
-        // TODO: Complete verification logic
-        // Need more fitting exception
-        // Need to implement regex for valid username and emails
         if (!validateUserId(userId)) {
             throw new InvalidUserNameException("Invalid username: Please ensure your username is" +
                     "between 3 and 20 characters long and contains only letters and numbers.");
@@ -66,19 +77,22 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
                 .build();
     }
 
+    /**
+     * Regex pattern validator method for alphanumeric string that is 3 to 20 characters long.
+     * @param userId the userId in CreateUserRequest.
+     * @return true or false, whether regex pattern matches.
+     */
     private boolean validateUserId(String userId) {
-        // Regex for alphanumeric string that is 3 to 20 characters long
         String regex = "^[a-zA-Z0-9]{3,20}$";
-
         return userId.matches(regex);
     }
 
+    /**
+     * Regex pattern validator method for proper email following standard rules.
+     * @param email email in CreateUserRequest.
+     * @return true or false, whether regex pattern matches.
+     */
     private boolean validateEmail(String email) {
-
-        // allowed characters at least 1, now we need optional dot, but it must be followed by allowed characters
-        // @
-        // allowed characters first followed by optional dot at least once
-        // finally end with 2-7 allowed characters after last dot if it exists.
         String regex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return email.matches(regex);
     }

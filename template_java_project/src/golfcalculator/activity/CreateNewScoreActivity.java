@@ -43,7 +43,7 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
 
     /**
      * This method handles the incoming request by persisting a new Score
-     * with the provides userId, rawScore, courseRating, slopeRating, and courseName.
+     * with the provided userId, rawScore, courseRating, slopeRating, and courseName.
      *
      * It calculates the handicapDifferential using score data, then stores this attribute.
      * It also stores the UTC dateTime.
