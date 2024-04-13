@@ -20,12 +20,27 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
     private UserDao userDao;
     private ScoreDao scoreDao;
 
+    /**
+     * The API endpoint in charge of returning calculated Handicap Index for user.
+     * @param userDao userDao to access the Users table.
+     * @param scoreDao scoreDao to access the Scores table.
+     */
     @Inject
     public GetHandicapActivity(UserDao userDao, ScoreDao scoreDao) {
         this.userDao = userDao;
         this.scoreDao = scoreDao;
     }
 
+    /**
+     * This method uses userId from {@link GetHandicapRequest} to retrieve last 20 scores, then calculate Handicap
+     * Index from them.
+     * @param getHandicapRequest The Lambda Function input
+     * @param context The Lambda execution environment context object.
+     * @exception UserNotFoundException if userDao cannot find requested account with the userId.
+     * @exception MinimumGamesNotPlayedException if user has not played at least 20 games, which is the minimum
+     * needed to calculate a Handicap Index using the official guidelines.
+     * @return GetHandicapResult which only contains a double handicapIndex.
+     */
     @Override
     public GetHandicapResult handleRequest(GetHandicapRequest getHandicapRequest, Context context) {
 
@@ -41,7 +56,7 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
             throw new MinimumGamesNotPlayedException("Must play at least 20 games for handicap index!");
         }
 
-        // Create HandicapResult with best 8 games of last 20 recently played
+        // Create HandicapResult using HandicapCalculator to calculate Handicap Index
         List<Score> scores = scoreDao.getLast20Games(userId);
         return GetHandicapResult.builder()
                 .withHandicapIndex(HandicapCalculator.calculateHandicapIndex(scores))

@@ -20,4 +20,12 @@ public class GetHandicapResult {
 
         public GetHandicapResult build() {return new GetHandicapResult(this);}
     }
+
+    public double getHandicapIndex() {
+        return handicapIndex;
+    }
+
+    public void setHandicapIndex(double handicapIndex) {
+        this.handicapIndex = handicapIndex;
+    }
 }

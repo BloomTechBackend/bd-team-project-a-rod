@@ -1,7 +1,5 @@
 package golfcalculator.models.requests;
 
-import golfcalculator.models.results.GetLatestGamesResult;
-
 import java.util.Objects;
 
 public class GetLatestGamesRequest {

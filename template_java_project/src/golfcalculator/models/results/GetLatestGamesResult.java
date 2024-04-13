@@ -21,4 +21,12 @@ public class GetLatestGamesResult {
 
         public GetLatestGamesResult build() {return new GetLatestGamesResult(this);}
     }
+
+    public List<ScoreModel> getScoreModels() {
+        return scoreModels;
+    }
+
+    public void setScoreModels(List<ScoreModel> scoreModels) {
+        this.scoreModels = scoreModels;
+    }
 }

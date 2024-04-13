@@ -20,12 +20,23 @@ public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequ
     private UserDao userDao;
     private ScoreDao scoreDao;
 
+    /**
+     * API endpoint in charge of returning latest 5 game scores info to user.
+     * @param userDao userDao to access Users table.
+     * @param scoreDao scoreDao to access Scores table.
+     */
     @Inject
     public GetLatestGamesActivity(UserDao userDao, ScoreDao scoreDao) {
         this.userDao = userDao;
         this.scoreDao = scoreDao;
     }
 
+    /**
+     * Uses userId in {@link GetLatestGamesRequest} to validate user and retrieve latest games.
+     * @param getLatestGamesRequest contains the userId.
+     * @param context The Lambda execution environment context object.
+     * @return GetLatestGamesResult, which is a List<ScoreModel> containing: userId, dateTime, handicapDifferential.
+     */
     @Override
     public GetLatestGamesResult handleRequest(GetLatestGamesRequest getLatestGamesRequest, Context context) {
         String userId = getLatestGamesRequest.getUserId();
