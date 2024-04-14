@@ -50,13 +50,12 @@ public class ScoreDaoTest {
         when(mockDynamoDBMapper.query(eq(Score.class), any(DynamoDBQueryExpression.class)))
                 .thenReturn(mockPaginatedQueryList);
         when(mockPaginatedQueryList.size()).thenReturn(expectedHandicapScores.size());
-        when(mockPaginatedQueryList.toArray()).thenReturn(expectedHandicapScores.toArray(new Score[0]));
+        when(mockPaginatedQueryList.get(anyInt())).thenReturn(expectedHandicapScores.get(0));
 
         List<Score> result = mockScoreDao.getLast20Games(validId);
 
         verify(mockDynamoDBMapper).query(eq(Score.class), any(DynamoDBQueryExpression.class));
-        verify(mockPaginatedQueryList).size();
-        verify(mockPaginatedQueryList).toArray();
+        verify(mockPaginatedQueryList, times(20)).get(anyInt());
         assertEquals(expectedHandicapGamesCount, result.size());
     }
 
@@ -71,7 +70,7 @@ public class ScoreDaoTest {
         when(mockDynamoDBMapper.query(eq(Score.class), any(DynamoDBQueryExpression.class)))
                 .thenReturn(mockPaginatedQueryList);
         when(mockPaginatedQueryList.size()).thenReturn(unexpectedHandicapScores.size());
-        when(mockPaginatedQueryList.toArray()).thenReturn(unexpectedHandicapScores.toArray());
+        when(mockPaginatedQueryList.get(anyInt())).thenReturn(unexpectedHandicapScores.get(0));
         
         assertThrows(UnexpectedServerQueryException.class, () -> {
             List<Score> result = mockScoreDao.getLast20Games(validId);
@@ -90,22 +89,19 @@ public class ScoreDaoTest {
         when(mockDynamoDBMapper.query(eq(Score.class), any(DynamoDBQueryExpression.class)))
                 .thenReturn(mockPaginatedQueryList);
         when(mockPaginatedQueryList.size()).thenReturn(expectedLatestGames.size());
-        when(mockPaginatedQueryList.toArray()).thenReturn(expectedLatestGames.toArray());
+        when(mockPaginatedQueryList.get(anyInt())).thenReturn(expectedLatestGames.get(0));
 
         List<Score> result = mockScoreDao.getLatest5Games(validId, testInputAboveMax);
 
         verify(mockDynamoDBMapper).query(eq(Score.class), any(DynamoDBQueryExpression.class));
-        verify(mockPaginatedQueryList, times(2)).size();
-        verify(mockPaginatedQueryList).toArray();
+        verify(mockPaginatedQueryList).size();
+        assertEquals(expectedSize, result.size());
     }
 
     @Test
     void getLatest5Games_serverReturnsUnexpectedResult_throwsUnexpectedServerQueryException() {
         List<Score> unexpectedLatestGames = new ArrayList<>();
-        int unexpectedSize = 6;
-        for (int i = 0; i < unexpectedSize; i++) {
-            unexpectedLatestGames.add(new Score());
-        }
+        int unexpectedSize = 0;
 
         when(mockDynamoDBMapper.query(eq(Score.class), any(DynamoDBQueryExpression.class)))
                 .thenReturn(mockPaginatedQueryList);

@@ -51,7 +51,7 @@ public class ScoreDao {
 
         PaginatedQueryList<Score> result = dynamoDBMapper.query(Score.class, queryExpression);
         List<Score> last20games = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < Math.min(20, result.size()); i++) {
             last20games.add(result.get(i));
         }
 
@@ -60,7 +60,7 @@ public class ScoreDao {
             throw new UnexpectedServerQueryException("Server did not return the expected 20 required games!");
         }
 
-        return new ArrayList<>(result);
+        return last20games;
     }
 
     /**
@@ -80,8 +80,9 @@ public class ScoreDao {
                 .withScanIndexForward(false); // descending order by datetime
 
         PaginatedQueryList<Score> result = dynamoDBMapper.query(Score.class, queryExpression);
+        int resultSize = result.size();
         List<Score> latestGames = new ArrayList<>();
-        for (int i = 0; i < Math.min(max5Amount, result.size()); i++) {
+        for (int i = 0; i < Math.min(max5Amount, resultSize); i++) {
             latestGames.add(result.get(i));
         }
 
