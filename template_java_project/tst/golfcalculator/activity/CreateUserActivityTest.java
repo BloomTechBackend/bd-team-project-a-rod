@@ -40,7 +40,7 @@ public class CreateUserActivityTest {
         initMocks(this);
 
         validRequest = CreateUserRequest.builder()
-                .withId(validId)
+                .withUserId(validId)
                 .withEmail(validEmail)
                 .build();
 
@@ -83,6 +83,30 @@ public class CreateUserActivityTest {
 
         assertThrows(InvalidEmailException.class, () -> {
             createUserActivity.handleRequest(invalidRequest, null);
+        });
+    }
+
+    @Test
+    void handleRequest_nullUserId_throwsIllegalArgumentException() {
+
+        CreateUserRequest nullUserRequest = CreateUserRequest.builder()
+                .withEmail(validEmail)
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            createUserActivity.handleRequest(nullUserRequest, null);
+        });
+    }
+
+    @Test
+    void handleRequest_nullEmail_throwsIllegalArgumentException() {
+
+        CreateUserRequest nullEmailRequest = CreateUserRequest.builder()
+                .withUserId(validId)
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            createUserActivity.handleRequest(nullEmailRequest, null);
         });
     }
 

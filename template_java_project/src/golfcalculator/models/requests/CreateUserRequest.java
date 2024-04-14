@@ -8,14 +8,14 @@ import java.util.Objects;
  * Request for CreateUserActivity API endpoint.
  */
 public class CreateUserRequest {
-    private String id;
+    private String userId;
     private String email;
 
     public CreateUserRequest() {
     }
 
     public CreateUserRequest(Builder builder) {
-        this.id = builder.id;
+        this.userId = builder.id;
         this.email = builder.email;
     }
 
@@ -24,7 +24,7 @@ public class CreateUserRequest {
         private String id;
         private String email;
 
-        public Builder withId(String idToUse) {
+        public Builder withUserId(String idToUse) {
             this.id = idToUse;
             return this;
         }
@@ -40,11 +40,11 @@ public class CreateUserRequest {
     }
 
     public String getId() {
-        return id;
+        return userId;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.userId = id;
     }
 
     public String getEmail() {
@@ -58,7 +58,7 @@ public class CreateUserRequest {
     @Override
     public String toString() {
         return "CreateUserRequest{" +
-                "id='" + id + '\'' +
+                "userId='" + userId + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }
