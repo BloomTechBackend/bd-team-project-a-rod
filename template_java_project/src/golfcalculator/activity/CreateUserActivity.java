@@ -45,7 +45,7 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
     public CreateUserResult handleRequest(final CreateUserRequest createUserRequest, Context context) {
 
         log.info("Received CreateUserRequest: {}", createUserRequest);
-        String userId = createUserRequest.getId();
+        String userId = createUserRequest.getUserId();
         String email = createUserRequest.getEmail();
         if (userId == null || email == null) {
             log.error("Username or email were left null in request: user {}, email {}", userId, email);

@@ -1,6 +1,5 @@
 package golfcalculator.models.requests;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
 
 import java.util.Objects;
 
@@ -39,12 +38,12 @@ public class CreateUserRequest {
         }
     }
 
-    public String getId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setId(String id) {
-        this.userId = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getEmail() {
@@ -68,11 +67,11 @@ public class CreateUserRequest {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CreateUserRequest that = (CreateUserRequest) o;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getEmail(), that.getEmail());
+        return Objects.equals(getUserId(), that.getUserId()) && Objects.equals(getEmail(), that.getEmail());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getEmail());
+        return Objects.hash(getUserId(), getEmail());
     }
 }

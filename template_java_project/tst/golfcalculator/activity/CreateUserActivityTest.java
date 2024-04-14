@@ -68,7 +68,7 @@ public class CreateUserActivityTest {
     void handleRequest_invalidUserId_throwsInvalidUserNameException() {
 
         CreateUserRequest invalidRequest = validRequest;
-        invalidRequest.setId(invalidId);
+        invalidRequest.setUserId(invalidId);
 
         assertThrows(InvalidUserNameException.class, () -> {
             createUserActivity.handleRequest(invalidRequest, null);
