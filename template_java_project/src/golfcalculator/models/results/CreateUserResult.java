@@ -2,6 +2,9 @@ package golfcalculator.models.results;
 
 import golfcalculator.models.UserModel;
 
+/**
+ * Result from user interaction with CreateUserActivity API endpoint.
+ */
 public class CreateUserResult {
 
     private UserModel userModel;

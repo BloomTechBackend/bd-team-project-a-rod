@@ -2,6 +2,9 @@ package golfcalculator.models;
 
 import java.util.Objects;
 
+/**
+ * Model of User for data exposure to user.
+ */
 public class UserModel {
     private String userId;
     private String email;

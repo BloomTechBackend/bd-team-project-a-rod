@@ -2,6 +2,9 @@ package golfcalculator.models.requests;
 
 import java.util.Objects;
 
+/**
+ * Request for GetHandicapActivity API endpoint.
+ */
 public class GetHandicapRequest {
     private String userId;
 

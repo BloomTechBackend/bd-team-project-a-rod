@@ -8,6 +8,7 @@ import golfcalculator.dynamodb.UserDao;
 import golfcalculator.dynamodb.models.Score;
 import golfcalculator.dynamodb.models.User;
 import golfcalculator.exceptions.MinimumGamesNotPlayedException;
+import golfcalculator.exceptions.UnexpectedServerQueryException;
 import golfcalculator.exceptions.UserNotFoundException;
 import golfcalculator.models.requests.GetLatestGamesRequest;
 import golfcalculator.models.results.GetLatestGamesResult;
@@ -52,7 +53,14 @@ public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequ
             throw new MinimumGamesNotPlayedException("Must play at least 1 game to see latest games!");
         }
 
-        List<Score> scores = scoreDao.getLatest5Games(userId, gamesPlayed);
+        List<Score> scores;
+
+        try {
+            scores = scoreDao.getLatest5Games(userId, gamesPlayed);
+        } catch (UnexpectedServerQueryException ex) {
+            throw new UnexpectedServerQueryException("Server did not return expected amount of games.");
+        }
+
         return GetLatestGamesResult.builder().withScoreModels(ModelConverter.toListScoreModel(scores))
                 .build();
     }

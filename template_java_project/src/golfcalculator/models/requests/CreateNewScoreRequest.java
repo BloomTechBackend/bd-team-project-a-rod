@@ -2,6 +2,9 @@ package golfcalculator.models.requests;
 
 import java.util.Objects;
 
+/**
+ * Request for CreateNewScoreActivity API endpoint
+ */
 public class CreateNewScoreRequest {
 
     private String userId;

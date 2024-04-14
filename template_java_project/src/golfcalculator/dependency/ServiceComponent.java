@@ -8,6 +8,9 @@ import golfcalculator.activity.GetLatestGamesActivity;
 
 import javax.inject.Singleton;
 
+/**
+ * Leverages Dagger framework to create DaggerServiceComponent for dependency injection.
+ */
 @Singleton
 @Component(modules = {DaoModule.class})
 public interface ServiceComponent {

@@ -2,6 +2,9 @@ package golfcalculator.models;
 
 import java.util.Objects;
 
+/**
+ * Model of Score for data exposure to user.
+ */
 public class ScoreModel {
 
     private String userId;

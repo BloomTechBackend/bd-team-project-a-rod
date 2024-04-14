@@ -9,6 +9,9 @@ import dagger.Provides;
 
 import javax.inject.Singleton;
 
+/**
+ * Provider methods for DynamoDBMapper for DynamoDB interaction.
+ */
 @Module
 public class DaoModule {
 

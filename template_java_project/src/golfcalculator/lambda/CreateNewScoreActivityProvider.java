@@ -9,6 +9,9 @@ import golfcalculator.dynamodb.UserDao;
 import golfcalculator.models.requests.CreateNewScoreRequest;
 import golfcalculator.models.results.CreateNewScoreResult;
 
+/**
+ * API endpoint for CreateNewScoreActivity
+ */
 public class CreateNewScoreActivityProvider implements RequestHandler<CreateNewScoreRequest, CreateNewScoreResult> {
 
     private static ServiceComponent serviceComponent;

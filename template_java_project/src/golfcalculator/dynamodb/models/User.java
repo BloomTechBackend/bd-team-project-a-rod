@@ -5,6 +5,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
+/**
+ * Represent a record in the Users table.
+ */
 @DynamoDBTable(tableName = "Users")
 public class User {
     public static final String EMAIL_INDEX = "EmailIndex";

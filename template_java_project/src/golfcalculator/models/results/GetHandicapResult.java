@@ -2,6 +2,9 @@ package golfcalculator.models.results;
 
 import golfcalculator.models.requests.GetHandicapRequest;
 
+/**
+ * Result from user interaction with GetHandicapActivity API endpoint.
+ */
 public class GetHandicapResult {
     private double handicapIndex;
 

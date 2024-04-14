@@ -4,6 +4,9 @@ import com.amazonaws.services.dynamodbv2.xspec.S;
 
 import java.util.Objects;
 
+/**
+ * Request for CreateUserActivity API endpoint.
+ */
 public class CreateUserRequest {
     private String id;
     private String email;

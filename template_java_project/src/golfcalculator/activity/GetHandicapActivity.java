@@ -8,6 +8,7 @@ import golfcalculator.dynamodb.UserDao;
 import golfcalculator.dynamodb.models.Score;
 import golfcalculator.dynamodb.models.User;
 import golfcalculator.exceptions.MinimumGamesNotPlayedException;
+import golfcalculator.exceptions.UnexpectedServerQueryException;
 import golfcalculator.exceptions.UserNotFoundException;
 import golfcalculator.models.requests.GetHandicapRequest;
 import golfcalculator.models.results.GetHandicapResult;
@@ -57,7 +58,13 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
         }
 
         // Create HandicapResult using HandicapCalculator to calculate Handicap Index
-        List<Score> scores = scoreDao.getLast20Games(userId);
+        List<Score> scores;
+        try {
+            scores = scoreDao.getLast20Games(userId);
+        } catch (UnexpectedServerQueryException ex) {
+            throw new UnexpectedServerQueryException("Server did not return expected 20 games");
+        }
+
         return GetHandicapResult.builder()
                 .withHandicapIndex(HandicapCalculator.calculateHandicapIndex(scores))
                 .build();

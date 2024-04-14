@@ -2,6 +2,9 @@ package golfcalculator.models.requests;
 
 import java.util.Objects;
 
+/**
+ * Request for GetLatestGamesActivity API endpoint.
+ */
 public class GetLatestGamesRequest {
     private String userId;
 

@@ -4,6 +4,9 @@ import golfcalculator.models.ScoreModel;
 
 import java.util.List;
 
+/**
+ * Result from user interaction with GetLatestGamesActivity API endpoint.
+ */
 public class GetLatestGamesResult {
     private List<ScoreModel> scoreModels;
 

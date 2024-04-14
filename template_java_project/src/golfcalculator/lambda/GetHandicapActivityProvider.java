@@ -7,6 +7,9 @@ import golfcalculator.dependency.ServiceComponent;
 import golfcalculator.models.requests.GetHandicapRequest;
 import golfcalculator.models.results.GetHandicapResult;
 
+/**
+ * API endpoint for GetHandicapActivity
+ */
 public class GetHandicapActivityProvider implements RequestHandler<GetHandicapRequest, GetHandicapResult> {
 
     private static ServiceComponent serviceComponent;

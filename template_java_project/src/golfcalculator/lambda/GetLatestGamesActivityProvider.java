@@ -7,6 +7,9 @@ import golfcalculator.dependency.ServiceComponent;
 import golfcalculator.models.requests.GetLatestGamesRequest;
 import golfcalculator.models.results.GetLatestGamesResult;
 
+/**
+ * API endpoint for GetLatestGamesActivity
+ */
 public class GetLatestGamesActivityProvider implements RequestHandler<GetLatestGamesRequest, GetLatestGamesResult> {
 
     private static ServiceComponent serviceComponent;

@@ -8,6 +8,9 @@ import golfcalculator.dependency.ServiceComponent;
 import golfcalculator.models.requests.CreateUserRequest;
 import golfcalculator.models.results.CreateUserResult;
 
+/**
+ * API endpoint for CreateUserActivity
+ */
 public class CreateUserActivityProvider implements RequestHandler<CreateUserRequest, CreateUserResult> {
 
     private static ServiceComponent serviceComponent;

@@ -2,6 +2,9 @@ package golfcalculator.models.results;
 
 import golfcalculator.models.ScoreModel;
 
+/**
+ * Result from user interaction with CreateNewScoreActivity API endpoint.
+ */
 public class CreateNewScoreResult {
 
     private ScoreModel scoreModel;
