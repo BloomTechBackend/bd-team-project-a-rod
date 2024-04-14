@@ -12,12 +12,15 @@ import golfcalculator.exceptions.UnexpectedServerQueryException;
 import golfcalculator.exceptions.UserNotFoundException;
 import golfcalculator.models.requests.GetHandicapRequest;
 import golfcalculator.models.results.GetHandicapResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.util.List;
 
 public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, GetHandicapResult> {
 
+    private final Logger log = LogManager.getLogger(GetHandicapActivity.class);
     private UserDao userDao;
     private ScoreDao scoreDao;
 
@@ -45,15 +48,19 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
     @Override
     public GetHandicapResult handleRequest(GetHandicapRequest getHandicapRequest, Context context) {
 
+        log.info("Request received: {}", getHandicapRequest);
+
         String userId = getHandicapRequest.getUserId();
         User user;
         try {
             user = userDao.getUser(userId);
         } catch (UserNotFoundException ex) {
+            log.error("User account not found {}", userId, ex);
             throw new UserNotFoundException("User account not found!");
         }
 
         if (user.getGamesPlayed() < 20) {
+            log.error("MinimumGamesNotPlayedException: gamesPlayed = {}", user.getGamesPlayed());
             throw new MinimumGamesNotPlayedException("Must play at least 20 games for handicap index!");
         }
 
@@ -62,11 +69,15 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
         try {
             scores = scoreDao.getLast20Games(userId);
         } catch (UnexpectedServerQueryException ex) {
+            log.error("Server did not return expected 20 games", ex);
             throw new UnexpectedServerQueryException("Server did not return expected 20 games");
         }
 
+        double handicapIndex = HandicapCalculator.calculateHandicapIndex(scores);
+        log.info("Response successfully created. Handicap Index = {}", handicapIndex);
+
         return GetHandicapResult.builder()
-                .withHandicapIndex(HandicapCalculator.calculateHandicapIndex(scores))
+                .withHandicapIndex(handicapIndex)
                 .build();
     }
 }

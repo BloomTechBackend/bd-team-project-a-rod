@@ -19,7 +19,7 @@ import javax.inject.Inject;
 
 public class CreateUserActivity implements RequestHandler<CreateUserRequest, CreateUserResult> {
 
-    private final Logger log = LogManager.getLogger();
+    private final Logger log = LogManager.getLogger(CreateUserActivity.class);
     private final UserDao userDao;
 
     /**
@@ -43,26 +43,30 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
      */
     @Override
     public CreateUserResult handleRequest(final CreateUserRequest createUserRequest, Context context) {
-        log.info("Received CreateUserRequest {} ", createUserRequest);
+        log.info("Received CreateUserRequest: {}", createUserRequest);
         String userId = createUserRequest.getId();
         String email = createUserRequest.getEmail();
 
         if (!validateUserId(userId)) {
+            log.error("InvalidUserNameException: Invalid userId requested {}", userId);
             throw new InvalidUserNameException("Invalid username: Please ensure your username is" +
                     "between 3 and 20 characters long and contains only letters and numbers.");
         }
 
         if (!validateEmail(email)) {
+            log.error("InvalidEmailException: Invalid email requested {}", email);
             throw new InvalidEmailException("Invalid email: Please enter a valid email address with a" +
                     "format like example@domain.com. Ensure it includes a domain name and a top-level" +
                     "domain (like .com, .org, etc).");
         }
 
         if (!userDao.isUnusedUserId(userId)) {
+            log.error("UserIdAlreadyExistsException: UserId already exists {}", userId);
             throw new UserIdAlreadyExistsException("User Id already in use!");
         }
 
         if (!userDao.isUnusedEmail(email)) {
+            log.error("EmailAlreadyExistsException: Email already exists {}", email);
             throw new EmailAlreadyExistsException("Email already in use!");
         }
 
@@ -71,6 +75,8 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
         user.setEmail(email);
         user.setGamesPlayed(0);
         userDao.saveUser(user);
+
+        log.info("Saved new user: {}", user);
 
         return CreateUserResult.builder()
                 .withUserModel(ModelConverter.toUserModel(user))

@@ -12,12 +12,15 @@ import golfcalculator.exceptions.UnexpectedServerQueryException;
 import golfcalculator.exceptions.UserNotFoundException;
 import golfcalculator.models.requests.GetLatestGamesRequest;
 import golfcalculator.models.results.GetLatestGamesResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.util.List;
 
 public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequest, GetLatestGamesResult> {
 
+    private final Logger log = LogManager.getLogger(GetLatestGamesActivity.class);
     private UserDao userDao;
     private ScoreDao scoreDao;
 
@@ -40,16 +43,21 @@ public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequ
      */
     @Override
     public GetLatestGamesResult handleRequest(GetLatestGamesRequest getLatestGamesRequest, Context context) {
+
+        log.info("GetLatestGamesRequest received {}", getLatestGamesRequest);
+
         String userId = getLatestGamesRequest.getUserId();
         User user;
         try {
             user = userDao.getUser(userId);
         } catch (UserNotFoundException ex) {
+            log.error("User account not found {}", userId, ex);
             throw new UserNotFoundException("User account not found!");
         }
 
         int gamesPlayed = user.getGamesPlayed();
         if (gamesPlayed == 0) {
+            log.error("MinimumGamesNotPlayedException. Must play at least 1 game. gamesPlayed = {}", user.getGamesPlayed());
             throw new MinimumGamesNotPlayedException("Must play at least 1 game to see latest games!");
         }
 
@@ -58,9 +66,11 @@ public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequ
         try {
             scores = scoreDao.getLatest5Games(userId, gamesPlayed);
         } catch (UnexpectedServerQueryException ex) {
+            log.error("Server did not return between 1 and 5 games, throws {}", ex);
             throw new UnexpectedServerQueryException("Server did not return expected amount of games.");
         }
 
+        log.info("Scores successfully returned to user");
         return GetLatestGamesResult.builder().withScoreModels(ModelConverter.toListScoreModel(scores))
                 .build();
     }

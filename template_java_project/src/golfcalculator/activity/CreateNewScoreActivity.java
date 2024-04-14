@@ -12,6 +12,8 @@ import golfcalculator.exceptions.UserNotFoundException;
 import golfcalculator.models.ScoreModel;
 import golfcalculator.models.requests.CreateNewScoreRequest;
 import golfcalculator.models.results.CreateNewScoreResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -26,6 +28,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequest, CreateNewScoreResult> {
 
+    private final Logger log = LogManager.getLogger(CreateNewScoreActivity.class);
     private UserDao userDao;
     private ScoreDao scoreDao;
 
@@ -59,7 +62,10 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
     @Override
     public CreateNewScoreResult handleRequest(CreateNewScoreRequest createNewScoreRequest, Context context) {
 
+        log.info("CreateNewScoreRequest received: {}", createNewScoreRequest);
+
         if (createNewScoreRequest.getRawScore() == 0) {
+            log.error("IllegalStateException: Missing value for rawScore {}", createNewScoreRequest);
             throw new IllegalStateException("Raw Score is required!");
         }
 
@@ -68,9 +74,11 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
         try {
             user = userDao.getUser(userId);
         } catch (UserNotFoundException ex) {
+            log.error("Could not find User account from request: {}", createNewScoreRequest, ex);
             throw new UserNotFoundException("Could not find User account!");
         }
 
+        log.info("User was found: ", userId);
         // increment user gamesPlayed
         user.setGamesPlayed(user.getGamesPlayed() + 1);
         userDao.saveUser(user);
@@ -101,6 +109,7 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
         newScore.setCourseName(courseName);
 
         scoreDao.saveNewScore(newScore);
+        log.info("New score saved: {}", newScore);
 
         return CreateNewScoreResult.builder()
                 .withScoreModel(ModelConverter.toScoreModel(newScore))
