@@ -8,6 +8,9 @@ import java.util.Objects;
 public class GetLatestGamesRequest {
     private String userId;
 
+    public GetLatestGamesRequest() {
+    }
+
     public GetLatestGamesRequest(Builder builder) {
         this.userId = builder.userId;
     }

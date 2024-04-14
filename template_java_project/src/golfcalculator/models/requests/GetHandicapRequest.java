@@ -1,5 +1,7 @@
 package golfcalculator.models.requests;
 
+import com.amazonaws.services.dynamodbv2.model.Get;
+
 import java.util.Objects;
 
 /**
@@ -7,6 +9,9 @@ import java.util.Objects;
  */
 public class GetHandicapRequest {
     private String userId;
+
+    public GetHandicapRequest() {
+    }
 
     public GetHandicapRequest(Builder builder) {
         this.userId = builder.userId;
