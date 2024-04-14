@@ -41,11 +41,15 @@ public class CreateNewScoreRequest {
             return this;
         }
         public Builder withCourseRating(double courseRating) {
-            this.courseRating = courseRating;
+            if (courseRating > 0) {
+                this.courseRating = courseRating;
+            }
             return this;
         }
         public Builder withSlopeRating(double slopeRating) {
-            this.slopeRating = slopeRating;
+            if (slopeRating > 0) {
+                this.slopeRating = slopeRating;
+            }
             return this;
         }
         public Builder withCourseName(String courseName) {
