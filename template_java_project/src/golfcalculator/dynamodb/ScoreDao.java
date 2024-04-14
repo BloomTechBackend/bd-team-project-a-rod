@@ -47,13 +47,16 @@ public class ScoreDao {
         DynamoDBQueryExpression<Score> queryExpression = new DynamoDBQueryExpression<Score>()
                 .withKeyConditionExpression("userId = :v_userId")
                 .withExpressionAttributeValues(Map.of(":v_userId", new AttributeValue().withS(userId)))
-                .withScanIndexForward(false) // For descending order by dateTime
-                .withLimit(20);
+                .withScanIndexForward(false); // For descending order by dateTime
 
         PaginatedQueryList<Score> result = dynamoDBMapper.query(Score.class, queryExpression);
+        List<Score> last20games = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            last20games.add(result.get(i));
+        }
 
-        if (result.size() != 20) {
-            log.error("Server result size unexpected. Size = {}", result.size());
+        if (last20games.size() != 20) {
+            log.error("Server result size unexpected. Size = {}", last20games.size());
             throw new UnexpectedServerQueryException("Server did not return the expected 20 required games!");
         }
 
@@ -70,19 +73,22 @@ public class ScoreDao {
      */
     public List<Score> getLatest5Games(String userId, int amount) {
 
-        int max5Amount = amount > 5 ? 5 : amount;
+        int max5Amount = Math.min(amount, 5);
         DynamoDBQueryExpression<Score> queryExpression = new DynamoDBQueryExpression<Score>()
                 .withKeyConditionExpression("userId = :v_userId")
                 .withExpressionAttributeValues(Map.of(":v_userId", new AttributeValue().withS(userId)))
-                .withScanIndexForward(false) // descending order by datetime
-                .withLimit(max5Amount);
+                .withScanIndexForward(false); // descending order by datetime
 
         PaginatedQueryList<Score> result = dynamoDBMapper.query(Score.class, queryExpression);
+        List<Score> latestGames = new ArrayList<>();
+        for (int i = 0; i < Math.min(max5Amount, result.size()); i++) {
+            latestGames.add(result.get(i));
+        }
 
-        if (result.size() < 1 || result.size() > 5) {
-            log.error("Server result size unexpected. Size = {}", result.size());
+        if (latestGames.size() < 1 || latestGames.size() > 5) {
+            log.error("Server result size unexpected. Size = {}", latestGames.size());
             throw new UnexpectedServerQueryException("Server did not return the expected amount of games.");
         }
-        return new ArrayList<>(result);
+        return latestGames;
     }
 }

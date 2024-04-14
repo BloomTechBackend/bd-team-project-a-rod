@@ -97,7 +97,7 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
                 createNewScoreRequest.getCourseRating() : 72.0;
         double slopeRating = createNewScoreRequest.getSlopeRating() > 0 ?
                 createNewScoreRequest.getSlopeRating() : 113.0;
-        
+
         String courseName = createNewScoreRequest.getCourseName();
 
         // Get handicapDifferential
