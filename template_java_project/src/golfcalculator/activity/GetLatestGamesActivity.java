@@ -66,7 +66,7 @@ public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequ
         try {
             scores = scoreDao.getLatest5Games(userId, gamesPlayed);
         } catch (UnexpectedServerQueryException ex) {
-            log.error("Server did not return between 1 and 5 games, throws {}", ex);
+            log.error("Server did not return between 1 and 5 games");
             throw new UnexpectedServerQueryException("Server did not return expected amount of games.");
         }
 

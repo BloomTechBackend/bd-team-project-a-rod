@@ -28,8 +28,8 @@ public class CreateNewScoreRequest {
     public static class Builder {
         private String userId;
         private int rawScore;
-        private double courseRating = 72.0;
-        private double slopeRating = 113.0;
+        private double courseRating;
+        private double slopeRating;
         private String courseName;
 
         public Builder withUserId(String idToUse) {
@@ -41,15 +41,11 @@ public class CreateNewScoreRequest {
             return this;
         }
         public Builder withCourseRating(double courseRating) {
-            if (courseRating > 0) {
-                this.courseRating = courseRating;
-            }
+            this.courseRating = courseRating;
             return this;
         }
         public Builder withSlopeRating(double slopeRating) {
-            if (slopeRating > 0) {
-                this.slopeRating = slopeRating;
-            }
+            this.slopeRating = slopeRating;
             return this;
         }
         public Builder withCourseName(String courseName) {

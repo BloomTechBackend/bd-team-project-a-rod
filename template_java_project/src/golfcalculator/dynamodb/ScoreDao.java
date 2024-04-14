@@ -6,6 +6,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import golfcalculator.dynamodb.models.Score;
 import golfcalculator.exceptions.UnexpectedServerQueryException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.Map;
 
 public class ScoreDao {
 
+    private final Logger log = LogManager.getLogger(ScoreDao.class);
     private DynamoDBMapper dynamoDBMapper;
 
     /**
@@ -50,6 +53,7 @@ public class ScoreDao {
         PaginatedQueryList<Score> result = dynamoDBMapper.query(Score.class, queryExpression);
 
         if (result.size() != 20) {
+            log.error("Server result size unexpected. Size = {}", result.size());
             throw new UnexpectedServerQueryException("Server did not return the expected 20 required games!");
         }
 
@@ -76,6 +80,7 @@ public class ScoreDao {
         PaginatedQueryList<Score> result = dynamoDBMapper.query(Score.class, queryExpression);
 
         if (result.size() < 1 || result.size() > 5) {
+            log.error("Server result size unexpected. Size = {}", result.size());
             throw new UnexpectedServerQueryException("Server did not return the expected amount of games.");
         }
         return new ArrayList<>(result);

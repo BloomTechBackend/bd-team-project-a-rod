@@ -90,8 +90,14 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
         String dateTime = utcNow.format(DateTimeFormatter.ISO_DATE_TIME);
 
         int rawScore = createNewScoreRequest.getRawScore();
-        double courseRating = createNewScoreRequest.getCourseRating();
-        double slopeRating = createNewScoreRequest.getSlopeRating();
+
+        // Want to make it optional for user to have to choose course and slope ratings
+        // That way they can be lazy if they don't care about accuracy
+        double courseRating = createNewScoreRequest.getCourseRating() > 0 ?
+                createNewScoreRequest.getCourseRating() : 72.0;
+        double slopeRating = createNewScoreRequest.getSlopeRating() > 0 ?
+                createNewScoreRequest.getSlopeRating() : 113.0;
+        
         String courseName = createNewScoreRequest.getCourseName();
 
         // Get handicapDifferential
