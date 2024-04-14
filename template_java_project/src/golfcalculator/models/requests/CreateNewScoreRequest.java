@@ -49,7 +49,7 @@ public class CreateNewScoreRequest {
             return this;
         }
         public Builder withCourseName(String courseName) {
-            this.courseRating = courseRating;
+            this.courseName = courseName;
             return this;
         }
 
