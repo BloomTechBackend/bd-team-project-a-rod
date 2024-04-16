@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golf Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+  <!-- https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <h1>Golf Calculator</h1>
+
+  <!-- User Creation -->
+  <h2>Create User</h2>
+  <form id="createUserForm">
+    <input type="text" id="userId" placeholder="User ID">
+    <input type="email" id="email" placeholder="Email">
+    <button type="submit">Create User</button>
+  </form>
+  <div id="createUserResult"></div>
+
+  <!-- Handicap Retrieval -->
+  <h2>Get Handicap</h2>
+  <form id="getHandicapForm">
+    <input type="text" id="handicapUserId" placeholder="User ID">
+    <button type="submit">Get Handicap</button>
+  </form>
+  <div id="handicapResult"></div>
+
+  <!-- Latest Scores Retrieval -->
+  <h2>Get Latest Scores</h2>
+  <form id="getLatestScoresForm">
+    <input type="text" id="latestScoresUserId" placeholder="User ID">
+    <button type="submit">Get Latest Scores</button>
+  </form>
+  <div id="scoresResult"></div>
+
+  <!-- Score Submission -->
+  <h2>Submit Score</h2>
+  <form id="submitScoreForm">
+    <input type="text" id="submitUserId" placeholder="User ID">
+    <input type="number" id="rawScore" placeholder="Raw Score">
+    <input type="number" id="courseRating" placeholder="Course Rating (optional)">
+    <input type="number" id="slopeRating" placeholder="Slope Rating (optional)">
+    <input type="text" id="courseName" placeholder="Course Name (optional)">
+    <button type="submit">Submit Score</button>
+  </form>
+  <div id="submitScoreResult"></div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
