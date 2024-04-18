@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 })
 
-function createUser(id, email) {
-    axios.post('https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/', { id, email })
+function createUser(userId, email) {
+    axios.post('https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/', { userId, email })
         .then(response => {
             document.getElementById('createUserResult').textContent = 'User created successfully! Response: ' + JSON.stringify(response.data);
         })

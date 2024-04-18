@@ -1,0 +1,452 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "GolfCalculator API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/golfcalculator/": {
+      "post": {
+        "summary": "Create a new user account",
+        "description": "This operation creates a new user account with a unique username and email address.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "email"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the user."
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Email address of the user."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input, object invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "IllegalArgumentException": {
+                    "summary": "Null ID or Email",
+                    "value": {
+                      "code": 400,
+                      "message": "ID and email cannot be null."
+                    }
+                  },
+                  "InvalidUserNameException": {
+                    "summary": "Invalid ID",
+                    "value": {
+                      "code": 400,
+                      "message": "The ID provided is not valid."
+                    }
+                  },
+                  "InvalidEmailException": {
+                    "summary": "Invalid Email",
+                    "value": {
+                      "code": 400,
+                      "message": "The email provided is invalid."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict, resource already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "UserIdAlreadyExistsException": {
+                    "summary": "ID Already Exists",
+                    "value": {
+                      "code": 409,
+                      "message": "The ID is already in use."
+                    }
+                  },
+                  "EmailAlreadyExistsException": {
+                    "summary": "Email Already Exists",
+                    "value": {
+                      "code": 409,
+                      "message": "The email is already in use."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error",
+                  "example": {
+                    "code": 500,
+                    "message": "An error occurred on the server."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/golfcalculator/{id}/handicap": {
+      "get": {
+        "summary": "Retrieve the handicap index for a user",
+        "description": "Returns the calculated handicap index of a user based on their games played.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Unique identifier for the user whose handicap index is being retrieved."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved handicap index.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetHandicapResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": 404,
+                  "message": "User not found."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Minimum required games not played.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": 409,
+                  "message": "Minimum 20 games required to calculate handicap."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": 500,
+                  "message": "Error retrieving scores from the database."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/golfcalculator/{id}/scores": {
+      "get": {
+        "summary": "Retrieve the latest games for a user",
+        "description": "Returns a list of the most recent game scores for a user, up to a maximum of 5 games.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Unique identifier for the user whose latest scores are being retrieved."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the latest game scores.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetLatestGamesResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": 404,
+                  "message": "User not found."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No games played.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": 409,
+                  "message": "No games have been played yet."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": 500,
+                  "message": "Error retrieving scores from the database, unexpected game count."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new score for a user",
+        "description": "Adds a new score entry for a user, with optional details about the golf course.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Unique identifier for the user who is logging a new score."
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "rawScore"
+                ],
+                "properties": {
+                  "rawScore": {
+                    "type": "integer",
+                    "description": "The raw score achieved by the user."
+                  },
+                  "courseRating": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "The rating of the golf course played (optional)."
+                  },
+                  "slopeRating": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "The slope rating of the golf course (optional)."
+                  },
+                  "courseName": {
+                    "type": "string",
+                    "description": "The name of the golf course (optional)."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully created a new score.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateNewScoreResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required raw score.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": 400,
+                  "message": "Raw score is required."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": 404,
+                  "message": "User ID not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": 500,
+                  "message": "Unexpected error occurred while creating the score."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateUserResult": {
+        "type": "object",
+        "properties": {
+          "userModel": {
+            "$ref": "#/components/schemas/UserModel"
+          }
+        }
+      },
+      "UserModel": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "The unique username of the user."
+          },
+          "email": {
+            "type": "string",
+            "description": "The email address of the user."
+          }
+        }
+      },
+      "GetHandicapResult": {
+        "type": "object",
+        "properties": {
+          "handicapIndex": {
+            "type": "number",
+            "format": "double",
+            "description": "The user's calculated golf handicap index."
+          }
+        }
+      },
+      "GetLatestGamesResult": {
+        "type": "object",
+        "properties": {
+          "scores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScoreModel"
+            }
+          }
+        }
+      },
+      "ScoreModel": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The user ID associated with the score."
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time when the game was played."
+          },
+          "handicapDifferential": {
+            "type": "number",
+            "format": "double",
+            "description": "The handicap differential for the game."
+          }
+        }
+      },
+      "CreateNewScoreResult": {
+        "type": "object",
+        "properties": {
+          "scoreModel": {
+            "$ref": "#/components/schemas/ScoreModel"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
