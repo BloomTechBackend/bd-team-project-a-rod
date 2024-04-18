@@ -31,4 +31,9 @@ public class GetHandicapResult {
     public void setHandicapIndex(double handicapIndex) {
         this.handicapIndex = handicapIndex;
     }
+
+    @Override
+    public String toString() {
+        return "Handicap Index: " + handicapIndex;
+    }
 }

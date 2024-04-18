@@ -58,10 +58,8 @@ public class UserModel {
 
     @Override
     public String toString() {
-        return "UserModel{" +
-                "userId='" + userId + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        return "User ID: " + userId +
+                ", Email: " + email;
     }
 
     @Override

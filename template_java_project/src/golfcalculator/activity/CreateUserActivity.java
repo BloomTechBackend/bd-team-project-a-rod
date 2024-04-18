@@ -44,12 +44,18 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
     @Override
     public CreateUserResult handleRequest(final CreateUserRequest createUserRequest, Context context) {
 
-        log.info("Received CreateUserRequest: {}", createUserRequest);
+        if (createUserRequest != null) {
+            log.info("Received CreateUserRequest with userId: {} and email: {}", createUserRequest.getUserId(), createUserRequest.getEmail());
+        } else {
+            log.info("Received CreateUserRequest is null");
+            throw new IllegalStateException("Error with Create User Request!");
+        }
+
         String userId = createUserRequest.getUserId();
         String email = createUserRequest.getEmail();
         if (userId == null || email == null) {
             log.error("Username or email were left null in request: user {}, email {}", userId, email);
-            throw new IllegalArgumentException("Username or email were left empty in request.");
+            throw new IllegalArgumentException("Username or email cannot be left blank!");
         }
 
         if (!validateUserId(userId)) {

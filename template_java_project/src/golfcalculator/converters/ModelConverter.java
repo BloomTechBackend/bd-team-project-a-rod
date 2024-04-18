@@ -5,8 +5,11 @@ import golfcalculator.dynamodb.models.User;
 import golfcalculator.models.ScoreModel;
 import golfcalculator.models.UserModel;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ModelConverter {
 
@@ -28,9 +31,14 @@ public class ModelConverter {
      * @return ScoreModel object
      */
     public static ScoreModel toScoreModel(Score score) {
+
+        ZonedDateTime parsedDate = ZonedDateTime.parse(score.getDateTime(), DateTimeFormatter.ISO_DATE_TIME);
+        DateTimeFormatter userFriendlyFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy", Locale.US);
+        String userFriendlyDate = parsedDate.format(userFriendlyFormatter);
+
         return ScoreModel.builder()
-                .withUserId(score.getUserId())
-                .withDateTime(score.getDateTime())
+                .withDateTime(userFriendlyDate)
+                .withRawScore(score.getRawScore())
                 .withHandicapDifferential(score.getHandicapDifferential())
                 .build();
     }

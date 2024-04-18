@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  * Implementation of the CreateNewScoreActivity for the GolfCalulcator's CreateNewScore API.
@@ -62,12 +63,44 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
     @Override
     public CreateNewScoreResult handleRequest(CreateNewScoreRequest createNewScoreRequest, Context context) {
 
-        log.info("CreateNewScoreRequest received: {}", createNewScoreRequest);
+        double defaultCourseRating = 72.0;
+        double defaultSlopeRating = 113.0;
 
-        if (createNewScoreRequest.getRawScore() == 0) {
-            log.error("IllegalStateException: Missing value for rawScore {}", createNewScoreRequest);
-            throw new IllegalStateException("Raw Score is required!");
+        // Create accurate logging taking account nuances of createNewScoreRequest
+        String logMessage = "Received new score request: ";
+        if (createNewScoreRequest == null) {
+            log.error(logMessage + "request is null!");
+            throw new IllegalStateException("Error: Empty request!");
         }
+        if (createNewScoreRequest.getUserId() == null) {
+            log.error(logMessage + "User ID cannot be null!");
+            throw new IllegalStateException("User ID cannot be blank!");
+        }
+        if (createNewScoreRequest.getRawScore() == 0) {
+            log.error(logMessage + "Missing value for rawScore");
+            throw new IllegalStateException("Raw Score cannot be blank!");
+        }
+        logMessage += "userId = " + createNewScoreRequest.getUserId() + ", rawScore = "
+                + createNewScoreRequest.getRawScore();
+        logMessage += ", courseRating = ";
+        if (createNewScoreRequest.getCourseRating() != 0.0) {
+            logMessage += createNewScoreRequest.getCourseRating();
+        } else {
+            logMessage += "DEFAULT (72.0)";
+        }
+        logMessage += ", slopeRating = ";
+        if (createNewScoreRequest.getSlopeRating() != 0.0) {
+            logMessage += createNewScoreRequest.getSlopeRating();
+        } else {
+            logMessage += "DEFAULT (113.0)";
+        }
+        logMessage += ", courseName = ";
+        if (createNewScoreRequest.getCourseName() != null) {
+            logMessage += createNewScoreRequest.getCourseName();
+        } else {
+            logMessage += "null";
+        }
+        log.info(logMessage);
 
         String userId = createNewScoreRequest.getUserId();
         User user;
@@ -79,6 +112,7 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
         }
 
         log.info("User was found: ", userId);
+
         // increment user gamesPlayed
         user.setGamesPlayed(user.getGamesPlayed() + 1);
         userDao.saveUser(user);
@@ -94,9 +128,9 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
         // Want to make it optional for user to have to choose course and slope ratings
         // That way they can be lazy if they don't care about accuracy
         double courseRating = createNewScoreRequest.getCourseRating() > 0 ?
-                createNewScoreRequest.getCourseRating() : 72.0;
+                createNewScoreRequest.getCourseRating() : defaultCourseRating;
         double slopeRating = createNewScoreRequest.getSlopeRating() > 0 ?
-                createNewScoreRequest.getSlopeRating() : 113.0;
+                createNewScoreRequest.getSlopeRating() : defaultSlopeRating;
 
         String courseName = createNewScoreRequest.getCourseName();
 

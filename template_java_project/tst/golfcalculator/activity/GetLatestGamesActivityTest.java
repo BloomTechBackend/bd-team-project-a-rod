@@ -51,7 +51,7 @@ public class GetLatestGamesActivityTest {
         for (int i = 0; i < 5; i++) {
             Score newScore = new Score();
             newScore.setUserId(userId);
-            newScore.setDateTime(String.valueOf(i));
+            newScore.setDateTime("2024-04-14T04:24:39.928823Z");
             newScore.setHandicapDifferential(i * 2);
             last5Scores.add(newScore);
         }

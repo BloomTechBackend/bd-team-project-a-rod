@@ -44,14 +44,19 @@ public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequ
     @Override
     public GetLatestGamesResult handleRequest(GetLatestGamesRequest getLatestGamesRequest, Context context) {
 
-        log.info("GetLatestGamesRequest received {}", getLatestGamesRequest);
+        if (getLatestGamesRequest == null || getLatestGamesRequest.getUserId() == null) {
+            log.error("Request is null!");
+            throw new IllegalStateException("Cannot leave User ID blank!");
+        }
+
+        log.info("GetLatestGamesRequest received: userID {}", getLatestGamesRequest.getUserId());
 
         String userId = getLatestGamesRequest.getUserId();
         User user;
         try {
             user = userDao.getUser(userId);
         } catch (UserNotFoundException ex) {
-            log.error("User account not found {}", userId, ex);
+            log.error("User account not found {}", userId);
             throw new UserNotFoundException("User account not found!");
         }
 
