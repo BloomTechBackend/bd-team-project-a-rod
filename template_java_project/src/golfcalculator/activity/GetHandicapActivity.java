@@ -48,11 +48,16 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
     @Override
     public GetHandicapResult handleRequest(GetHandicapRequest getHandicapRequest, Context context) {
 
+        GetHandicapResult result = GetHandicapResult.builder().build();
+
         if (getHandicapRequest == null || getHandicapRequest.getUserId() == null) {
             log.error("Request or User Id is null!");
-            throw new IllegalStateException("Cannot leave User ID blank!");
+            result.setError("IllegalStateException");
+            result.setErrorMessage("Cannot leave User ID blank!");
+            return result;
+            //throw new IllegalStateException("Cannot leave User ID blank!");
         }
-        log.info("Request received: {}", getHandicapRequest);
+        log.info("Request received: {}", getHandicapRequest.getUserId());
 
         String userId = getHandicapRequest.getUserId();
         User user;
@@ -60,12 +65,18 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
             user = userDao.getUser(userId);
         } catch (UserNotFoundException ex) {
             log.error("User account not found {}", userId, ex);
-            throw new UserNotFoundException("User account not found!");
+            result.setError("UserNotFoundException");
+            result.setErrorMessage("User account not found!");
+            return result;
+            //throw new UserNotFoundException("User account not found!");
         }
 
         if (user.getGamesPlayed() < 20) {
             log.error("MinimumGamesNotPlayedException: gamesPlayed = {}", user.getGamesPlayed());
-            throw new MinimumGamesNotPlayedException("Must play at least 20 games for handicap index!");
+            result.setError("MinimumGamesNotPlayedException");
+            result.setErrorMessage("Must play at least 20 games for handicap index!");
+            return result;
+            //throw new MinimumGamesNotPlayedException("Must play at least 20 games for handicap index!");
         }
 
         // Create HandicapResult using HandicapCalculator to calculate Handicap Index
@@ -74,7 +85,10 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
             scores = scoreDao.getLast20Games(userId);
         } catch (UnexpectedServerQueryException ex) {
             log.error("Server did not return expected 20 games", ex);
-            throw new UnexpectedServerQueryException("Server did not return expected 20 games");
+            result.setError("UnexpectedServerQueryException");
+            result.setErrorMessage("Server did not return expected 20 games");
+            return result;
+            //throw new UnexpectedServerQueryException("Server did not return expected 20 games");
         }
 
         double handicapIndex = HandicapCalculator.calculateHandicapIndex(scores);
