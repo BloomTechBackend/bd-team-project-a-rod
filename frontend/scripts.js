@@ -43,7 +43,10 @@ function createUser(userId, email) {
             if (data.error) {
                 resultContainer.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`;
             } else {
-                resultContainer.innerHTML = `<strong>User ID:</strong> ${data.userModel.userId}, <strong>Email:</strong> ${data.userModel.email}`
+                const userDiv = document.createElement('div');
+                userDiv.classList.add('user-entry');
+                userDiv.innerHTML = `<strong>User ID:</strong> ${data.userModel.userId}, <strong>Email:</strong> ${data.userModel.email}`;
+                resultContainer.appendChild(userDiv);
             }
         })
         .catch(error => {
@@ -65,7 +68,10 @@ function getHandicap(id) {
                 resultContainer.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`;
             } else {
                 // Display the handicap index if no error is present
-                resultContainer.innerHTML = `<strong>Handicap Index:</strong> ${data.handicapIndex}`;
+                const handDiv = document.createElement('div');
+                handDiv.classList.add('hand-entry');
+                handDiv.innerHTML = `<strong>Handicap Index:</strong> ${data.handicapIndex}`;
+                resultContainer.appendChild(handDiv);
             }
         })
         .catch(error => {
@@ -73,31 +79,6 @@ function getHandicap(id) {
             console.error("Error retrieving handicap:", error);
         });
 }
-
-//function getScores(id) {
-//    axios.get(`https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/${id}/scores`)
-//        .then(response => {
-//            console.log('Data received:', response.data);  // Log the full data object
-//            const scoresContainer = document.getElementById('scoresResult');
-//            scoresContainer.innerHTML = '';  // Clear previous results
-//            const scores = response.data.scoreModels;
-//            if (scores && scores.length > 0) {
-//                scores.forEach(score => {
-//                    console.log('Processing score:', score);  // Log each score
-//                    const scoreDiv = document.createElement('div');
-//                    scoreDiv.classList.add('score-entry');
-//                    scoreDiv.innerHTML = `<strong>Date:</strong> ${score.dateTime}, <strong>Score:</strong> ${score.rawScore}, <strong>Differential:</strong> ${score.handicapDifferential}`;
-//                    scoresContainer.appendChild(scoreDiv);
-//                });
-//            } else {
-//                scoresContainer.textContent = 'Incorrect User ID provided or less than 1 game played.';
-//            }
-//        })
-//        .catch(error => {
-//            document.getElementById('scoresResult').textContent = 'Failed to retrieve scores. Error: ' + error;
-//            console.error('Error fetching scores:', error);  // Log the error
-//        });
-//}
 
 function getScores(id) {
     axios.get(`https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/${id}/scores`)
@@ -125,19 +106,42 @@ function getScores(id) {
         });
 }
 
+//function submitScore(id, rawScore, courseRating, slopeRating, courseName) {
+//    axios.post(`https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/${id}/scores`, { rawScore, courseRating, slopeRating, courseName })
+//        .then(response => {
+//            const score = response.data.scoreModel;  // Adjusted to access scoreModel
+//            const resultContainer = document.getElementById('submitScoreResult');
+//            resultContainer.innerHTML = ''; // Clear previous result
+//            if (score) {
+//                const scoreDiv = document.createElement('div');
+//                scoreDiv.classList.add('score-entry');
+//                scoreDiv.innerHTML = `<strong>Date:</strong> ${score.dateTime}, <strong>Score:</strong> ${score.rawScore}, <strong>Differential:</strong> ${score.handicapDifferential}`;
+//                resultContainer.appendChild(scoreDiv);
+//            } else {
+//                resultContainer.textContent = 'Incorrect User ID provided or Raw Score left blank.';
+//            }
+//        })
+//        .catch(error => {
+//            document.getElementById('submitScoreResult').textContent = 'Failed to submit score. Error: ' + error;
+//            console.error("Error submitting score:", error);
+//        });
+//}
+
 function submitScore(id, rawScore, courseRating, slopeRating, courseName) {
     axios.post(`https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/${id}/scores`, { rawScore, courseRating, slopeRating, courseName })
         .then(response => {
+            const data = response.data;
             const score = response.data.scoreModel;  // Adjusted to access scoreModel
             const resultContainer = document.getElementById('submitScoreResult');
             resultContainer.innerHTML = ''; // Clear previous result
-            if (score) {
+
+            if (data.error) {
+                resultContainer.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`
+            } else {
                 const scoreDiv = document.createElement('div');
                 scoreDiv.classList.add('score-entry');
                 scoreDiv.innerHTML = `<strong>Date:</strong> ${score.dateTime}, <strong>Score:</strong> ${score.rawScore}, <strong>Differential:</strong> ${score.handicapDifferential}`;
                 resultContainer.appendChild(scoreDiv);
-            } else {
-                resultContainer.textContent = 'Incorrect User ID provided or Raw Score left blank.';
             }
         })
         .catch(error => {

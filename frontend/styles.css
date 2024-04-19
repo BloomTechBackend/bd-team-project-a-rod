@@ -30,3 +30,19 @@ button:hover {
     margin-top: 10px;
     border-radius: 5px;
 }
+
+.hand-entry {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.user-entry {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
