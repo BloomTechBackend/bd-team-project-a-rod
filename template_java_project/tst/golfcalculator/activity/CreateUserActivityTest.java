@@ -34,6 +34,19 @@ public class CreateUserActivityTest {
     private String validEmail = "valid@email.com";
     private String invalidEmail = "joe@.com";
     private User validUser;
+    private String illegalStateException = "IllegalStateException";
+    private String illegalStateExceptionMessage = "Please fill in required fields.";
+    private String invalidUserNameException = "InvalidUserNameException";
+    private String invalidUserNameExceptionMessage = "Invalid username: Please ensure your username is" +
+            "between 3 and 20 characters long and contains only letters and numbers.";
+    private String invalidEmailException = "InvalidEmailException";
+    private String invalidEmailExceptionMessage = "Invalid email: Please enter a valid email address with a" +
+            "format like example@domain.com. Ensure it includes a domain name and a top-level" +
+            "domain (like .com, .org, etc).";
+    private String userIdAlreadyExistsException = "UserIdAlreadyExistsException";
+    private String userIdAlreadyExistsExceptionMessage = "User Id already in use!";
+    private String emailAlreadyExistsException = "EmailAlreadyExistsException";
+    private String emailAlreadyExistsExceptionMessage = "Email already in use!";
 
     @BeforeEach
     private void setUp() {
@@ -70,9 +83,10 @@ public class CreateUserActivityTest {
         CreateUserRequest invalidRequest = validRequest;
         invalidRequest.setUserId(invalidId);
 
-        assertThrows(InvalidUserNameException.class, () -> {
-            createUserActivity.handleRequest(invalidRequest, null);
-        });
+        CreateUserResult result = createUserActivity.handleRequest(validRequest, null);
+
+        assertEquals(invalidUserNameException, result.getError());
+        assertEquals(invalidUserNameExceptionMessage, result.getErrorMessage());
     }
 
     @Test
@@ -81,9 +95,10 @@ public class CreateUserActivityTest {
         CreateUserRequest invalidRequest = validRequest;
         invalidRequest.setEmail(invalidEmail);
 
-        assertThrows(InvalidEmailException.class, () -> {
-            createUserActivity.handleRequest(invalidRequest, null);
-        });
+        CreateUserResult result = createUserActivity.handleRequest(invalidRequest, null);
+
+        assertEquals(invalidEmailException, result.getError());
+        assertEquals(invalidEmailExceptionMessage, result.getErrorMessage());
     }
 
     @Test
@@ -93,9 +108,10 @@ public class CreateUserActivityTest {
                 .withEmail(validEmail)
                 .build();
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            createUserActivity.handleRequest(nullUserRequest, null);
-        });
+        CreateUserResult result = createUserActivity.handleRequest(nullUserRequest, null);
+
+        assertEquals(illegalStateException, result.getError());
+        assertEquals(illegalStateExceptionMessage, result.getErrorMessage());
     }
 
     @Test
@@ -105,9 +121,10 @@ public class CreateUserActivityTest {
                 .withUserId(validId)
                 .build();
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            createUserActivity.handleRequest(nullEmailRequest, null);
-        });
+        CreateUserResult result = createUserActivity.handleRequest(nullEmailRequest, null);
+
+        assertEquals(illegalStateException, result.getError());
+        assertEquals(illegalStateExceptionMessage, result.getErrorMessage());
     }
 
     @Test
@@ -115,9 +132,10 @@ public class CreateUserActivityTest {
 
         when(userDao.isUnusedUserId(validId)).thenReturn(false);
 
-        assertThrows(UserIdAlreadyExistsException.class, () -> {
-            createUserActivity.handleRequest(validRequest, null);
-        });
+        CreateUserResult result = createUserActivity.handleRequest(validRequest, null);
+
+        assertEquals(userIdAlreadyExistsException, result.getError());
+        assertEquals(userIdAlreadyExistsExceptionMessage, result.getErrorMessage());
     }
 
     @Test
@@ -126,8 +144,9 @@ public class CreateUserActivityTest {
         when(userDao.isUnusedUserId(validId)).thenReturn(true);
         when(userDao.isUnusedEmail(validEmail)).thenReturn(false);
 
-        assertThrows(EmailAlreadyExistsException.class, () -> {
-            createUserActivity.handleRequest(validRequest, null);
-        });
+        CreateUserResult result = createUserActivity.handleRequest(validRequest, null);
+
+        assertEquals(emailAlreadyExistsException, result.getError());
+        assertEquals(emailAlreadyExistsExceptionMessage, result.getErrorMessage());
     }
 }

@@ -8,6 +8,8 @@ import golfcalculator.models.UserModel;
 public class CreateUserResult {
 
     private UserModel userModel;
+    private String error;
+    private String errorMessage;
 
     public CreateUserResult(Builder builder) {
         this.userModel = builder.userModel;
@@ -31,5 +33,21 @@ public class CreateUserResult {
 
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

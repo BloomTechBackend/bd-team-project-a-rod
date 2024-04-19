@@ -44,41 +44,64 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
     @Override
     public CreateUserResult handleRequest(final CreateUserRequest createUserRequest, Context context) {
 
+        CreateUserResult result = CreateUserResult.builder().build();
+
         if (createUserRequest != null) {
             log.info("Received CreateUserRequest with userId: {} and email: {}", createUserRequest.getUserId(), createUserRequest.getEmail());
         } else {
-            log.info("Received CreateUserRequest is null");
-            throw new IllegalStateException("Error with Create User Request!");
+            log.error("Received CreateUserRequest is null");
+            result.setError("IllegalStateException");
+            result.setErrorMessage("Please fill in required fields.");
+            return result;
+            //throw new IllegalStateException("Error with Create User Request!");
         }
 
         String userId = createUserRequest.getUserId();
         String email = createUserRequest.getEmail();
         if (userId == null || email == null) {
             log.error("Username or email were left null in request: user {}, email {}", userId, email);
-            throw new IllegalArgumentException("Username or email cannot be left blank!");
+            result.setError("IllegalStateException");
+            result.setErrorMessage("Please fill in required fields.");
+            return result;
+            //throw new IllegalArgumentException("Username or email cannot be left blank!");
         }
 
         if (!validateUserId(userId)) {
             log.error("InvalidUserNameException: Invalid userId requested {}", userId);
-            throw new InvalidUserNameException("Invalid username: Please ensure your username is" +
-                    "between 3 and 20 characters long and contains only letters and numbers.");
+            result.setError("InvalidUserNameException");
+            result.setErrorMessage("Invalid username: Please ensure your username is" +
+                            "between 3 and 20 characters long and contains only letters and numbers.");
+            return result;
+            //throw new InvalidUserNameException("Invalid username: Please ensure your username is" +
+            //        "between 3 and 20 characters long and contains only letters and numbers.");
         }
 
         if (!validateEmail(email)) {
             log.error("InvalidEmailException: Invalid email requested {}", email);
-            throw new InvalidEmailException("Invalid email: Please enter a valid email address with a" +
+            result.setError("InvalidEmailException");
+            result.setErrorMessage("Invalid email: Please enter a valid email address with a" +
                     "format like example@domain.com. Ensure it includes a domain name and a top-level" +
                     "domain (like .com, .org, etc).");
+            return result;
+            /*throw new InvalidEmailException("Invalid email: Please enter a valid email address with a" +
+                    "format like example@domain.com. Ensure it includes a domain name and a top-level" +
+                    "domain (like .com, .org, etc).");*/
         }
 
         if (!userDao.isUnusedUserId(userId)) {
             log.error("UserIdAlreadyExistsException: UserId already exists {}", userId);
-            throw new UserIdAlreadyExistsException("User Id already in use!");
+            result.setError("UserIdAlreadyExistsException");
+            result.setErrorMessage("User Id already in use!");
+            return result;
+            //throw new UserIdAlreadyExistsException("User Id already in use!");
         }
 
         if (!userDao.isUnusedEmail(email)) {
             log.error("EmailAlreadyExistsException: Email already exists {}", email);
-            throw new EmailAlreadyExistsException("Email already in use!");
+            result.setError("EmailAlreadyExistsException");
+            result.setErrorMessage("Email already in use!");
+            return result;
+            //throw new EmailAlreadyExistsException("Email already in use!");
         }
 
         User user = new User();
