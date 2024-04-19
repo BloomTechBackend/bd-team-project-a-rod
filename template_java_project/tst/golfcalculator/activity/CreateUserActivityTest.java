@@ -37,10 +37,10 @@ public class CreateUserActivityTest {
     private String illegalStateException = "IllegalStateException";
     private String illegalStateExceptionMessage = "Please fill in required fields.";
     private String invalidUserNameException = "InvalidUserNameException";
-    private String invalidUserNameExceptionMessage = "Invalid username: Please ensure your username is" +
+    private String invalidUserNameExceptionMessage = "Invalid username: Please ensure your username is " +
             "between 3 and 20 characters long and contains only letters and numbers.";
     private String invalidEmailException = "InvalidEmailException";
-    private String invalidEmailExceptionMessage = "Invalid email: Please enter a valid email address with a" +
+    private String invalidEmailExceptionMessage = "Invalid email: Please enter a valid email address with a " +
             "format like example@domain.com. Ensure it includes a domain name and a top-level" +
             "domain (like .com, .org, etc).";
     private String userIdAlreadyExistsException = "UserIdAlreadyExistsException";

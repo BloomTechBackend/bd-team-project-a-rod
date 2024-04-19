@@ -69,7 +69,7 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
         if (!validateUserId(userId)) {
             log.error("InvalidUserNameException: Invalid userId requested {}", userId);
             result.setError("InvalidUserNameException");
-            result.setErrorMessage("Invalid username: Please ensure your username is" +
+            result.setErrorMessage("Invalid username: Please ensure your username is " +
                             "between 3 and 20 characters long and contains only letters and numbers.");
             return result;
             //throw new InvalidUserNameException("Invalid username: Please ensure your username is" +
@@ -79,7 +79,7 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
         if (!validateEmail(email)) {
             log.error("InvalidEmailException: Invalid email requested {}", email);
             result.setError("InvalidEmailException");
-            result.setErrorMessage("Invalid email: Please enter a valid email address with a" +
+            result.setErrorMessage("Invalid email: Please enter a valid email address with a " +
                     "format like example@domain.com. Ensure it includes a domain name and a top-level" +
                     "domain (like .com, .org, etc).");
             return result;
