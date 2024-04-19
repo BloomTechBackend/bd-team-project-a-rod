@@ -1,5 +1,6 @@
 package golfcalculator.activity;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMappingException;
 import golfcalculator.dynamodb.ScoreDao;
 import golfcalculator.dynamodb.UserDao;
 import golfcalculator.dynamodb.models.Score;
@@ -32,6 +33,10 @@ public class CreateNewScoreActivityTest {
     private User validUser;
     private String validUserId = "validUser";
     double validScoreResultIndex;
+    private String illegalStateException = "IllegalStateException";
+    private String illegalStateExceptionMessage = "Please fill in required fields!";
+    private String userNotFoundException = "UserNotFoundException";
+    private String userNotFoundExceptionMessage = "Could not find User account!";
 
     @BeforeEach
     private void setUp() {
@@ -76,20 +81,36 @@ public class CreateNewScoreActivityTest {
 
         when(userDao.getUser(nonExistentUserId)).thenThrow(new UserNotFoundException());
 
-        assertThrows(UserNotFoundException.class, () -> {
-            createNewScoreActivity.handleRequest(badUserIdRequest, null);
-        });
+        CreateNewScoreResult result = createNewScoreActivity.handleRequest(badUserIdRequest, null);
 
         verify(userDao).getUser(nonExistentUserId);
         verifyNoInteractions(scoreDao);
+        assertEquals(userNotFoundException, result.getError());
+        assertEquals(userNotFoundExceptionMessage, result.getErrorMessage());
+        assertNull(result.getScoreModel());
     }
 
     @Test
     void handleRequest_rawScoreMissing_throwsIllegalStateException() {
         CreateNewScoreRequest noRawScore = validCreateNewScoreRequest;
         noRawScore.setRawScore(0);
-        assertThrows(IllegalStateException.class, () -> {
-            createNewScoreActivity.handleRequest(noRawScore, null);
-        });
+
+        CreateNewScoreResult result = createNewScoreActivity.handleRequest(noRawScore, null);
+
+        assertEquals(illegalStateException, result.getError());
+        assertEquals(illegalStateExceptionMessage, result.getErrorMessage());
+        assertNull(result.getScoreModel());
+    }
+
+    @Test
+    void handleRequest_dynamoDBException_throwsUserNotFoundException() {
+
+        when(userDao.getUser(anyString())).thenThrow(DynamoDBMappingException.class);
+
+        CreateNewScoreResult result = createNewScoreActivity.handleRequest(validCreateNewScoreRequest, null);
+
+        assertEquals(userNotFoundException, result.getError());
+        assertEquals(userNotFoundExceptionMessage, result.getErrorMessage());
+        assertNull(result.getScoreModel());
     }
 }

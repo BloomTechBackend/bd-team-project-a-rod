@@ -8,6 +8,8 @@ import golfcalculator.models.ScoreModel;
 public class CreateNewScoreResult {
 
     private ScoreModel scoreModel;
+    private String error;
+    private String errorMessage;
 
     public CreateNewScoreResult(Builder builder) {
         this.scoreModel = builder.scoreModel;
@@ -32,5 +34,21 @@ public class CreateNewScoreResult {
 
     public void setScoreModel(ScoreModel scoreModel) {
         this.scoreModel = scoreModel;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

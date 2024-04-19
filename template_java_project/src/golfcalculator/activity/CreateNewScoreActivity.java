@@ -64,22 +64,20 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
     @Override
     public CreateNewScoreResult handleRequest(CreateNewScoreRequest createNewScoreRequest, Context context) {
 
+        CreateNewScoreResult errorResult = CreateNewScoreResult.builder().build();
+
         double defaultCourseRating = 72.0;
         double defaultSlopeRating = 113.0;
 
         // Create accurate logging taking account nuances of createNewScoreRequest
         String logMessage = "Received new score request: ";
-        if (createNewScoreRequest == null) {
+        if (createNewScoreRequest == null || createNewScoreRequest.getUserId() == null ||
+                createNewScoreRequest.getUserId().equals("") || createNewScoreRequest.getRawScore() == 0) {
             log.error(logMessage + "request is null!");
-            throw new IllegalStateException("Error: Empty request!");
-        }
-        if (createNewScoreRequest.getUserId() == null) {
-            log.error(logMessage + "User ID cannot be null!");
-            throw new IllegalStateException("User ID cannot be blank!");
-        }
-        if (createNewScoreRequest.getRawScore() == 0) {
-            log.error(logMessage + "Missing value for rawScore");
-            throw new IllegalStateException("Raw Score cannot be blank!");
+            errorResult.setError("IllegalStateException");
+            errorResult.setErrorMessage("Please fill in required fields!");
+            return errorResult;
+            //throw new IllegalStateException("Error: Empty request!");
         }
         logMessage += "userId = " + createNewScoreRequest.getUserId() + ", rawScore = "
                 + createNewScoreRequest.getRawScore();
@@ -109,9 +107,15 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
             user = userDao.getUser(userId);
         } catch (UserNotFoundException ex) {
             log.error("Could not find User account from request: {}", createNewScoreRequest, ex);
-            throw new UserNotFoundException("Could not find User account!");
+            errorResult.setError("UserNotFoundException");
+            errorResult.setErrorMessage("Could not find User account!");
+            return errorResult;
+            //throw new UserNotFoundException("Could not find User account!");
         } catch (DynamoDBMappingException ex) {
-            throw new DynamoDBMappingException();
+            log.error(ex);
+            errorResult.setError("UserNotFoundException");
+            errorResult.setErrorMessage("Could not find User account!");
+            return errorResult;
         }
 
         log.info("User was found: ", userId);
