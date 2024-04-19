@@ -1,5 +1,6 @@
 package golfcalculator.activity;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMappingException;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import golfcalculator.converters.ModelConverter;
@@ -58,6 +59,8 @@ public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequ
         } catch (UserNotFoundException ex) {
             log.error("User account not found {}", userId);
             throw new UserNotFoundException("User account not found!");
+        } catch (DynamoDBMappingException ex) {
+            throw new DynamoDBMappingException();
         }
 
         int gamesPlayed = user.getGamesPlayed();

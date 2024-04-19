@@ -1,5 +1,6 @@
 package golfcalculator.activity;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMappingException;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import golfcalculator.converters.HandicapCalculator;
@@ -50,7 +51,7 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
 
         GetHandicapResult result = GetHandicapResult.builder().build();
 
-        if (getHandicapRequest == null || getHandicapRequest.getUserId() == null) {
+        if (getHandicapRequest == null || getHandicapRequest.getUserId() == null || getHandicapRequest.getUserId().equals("")) {
             log.error("Request or User Id is null!");
             result.setError("IllegalStateException");
             result.setErrorMessage("Cannot leave User ID blank!");
@@ -69,6 +70,11 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
             result.setErrorMessage("User account not found!");
             return result;
             //throw new UserNotFoundException("User account not found!");
+        } catch (DynamoDBMappingException e) {
+            log.error("DynamoDBMappingException: User account not found!");
+            result.setError("UserNotFoundException");
+            result.setErrorMessage("User account not found!");
+            return result;
         }
 
         if (user.getGamesPlayed() < 20) {

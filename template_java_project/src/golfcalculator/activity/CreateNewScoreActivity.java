@@ -1,5 +1,6 @@
 package golfcalculator.activity;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMappingException;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import golfcalculator.converters.HandicapCalculator;
@@ -109,6 +110,8 @@ public class CreateNewScoreActivity implements RequestHandler<CreateNewScoreRequ
         } catch (UserNotFoundException ex) {
             log.error("Could not find User account from request: {}", createNewScoreRequest, ex);
             throw new UserNotFoundException("Could not find User account!");
+        } catch (DynamoDBMappingException ex) {
+            throw new DynamoDBMappingException();
         }
 
         log.info("User was found: ", userId);
