@@ -33,24 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 })
 
-//function createUser(userId, email) {
-//    axios.post('https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/', { userId, email })
-//        .then(response => {
-//            const user = response.data.userModel; // Access the userModel from the response
-//            const resultContainer = document.getElementById('createUserResult');
-//            resultContainer.innerHTML = ''; // clear previous result
-//            if (user && user.userId && user.email) { // Check if userModel and properties are defined
-//                resultContainer.innerHTML = `<strong>User ID:</strong> ${user.userId}, <strong>Email:</strong> ${user.email}`;
-//            } else {
-//                resultContainer.textContent = 'Provided User ID must be alphanumeric and email must be valid. Otherwise, User ID or Email may be taken.';
-//            }
-//        })
-//        .catch(error => {
-//            document.getElementById('createUserResult').textContent = 'Failed to create user. Error: ' + error;
-//            console.error("Error creating user:", error);
-//        });
-//}
-
 function createUser(userId, email) {
     axios.post('https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/', { userId, email })
         .then(response => {
@@ -92,23 +74,49 @@ function getHandicap(id) {
         });
 }
 
+//function getScores(id) {
+//    axios.get(`https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/${id}/scores`)
+//        .then(response => {
+//            console.log('Data received:', response.data);  // Log the full data object
+//            const scoresContainer = document.getElementById('scoresResult');
+//            scoresContainer.innerHTML = '';  // Clear previous results
+//            const scores = response.data.scoreModels;
+//            if (scores && scores.length > 0) {
+//                scores.forEach(score => {
+//                    console.log('Processing score:', score);  // Log each score
+//                    const scoreDiv = document.createElement('div');
+//                    scoreDiv.classList.add('score-entry');
+//                    scoreDiv.innerHTML = `<strong>Date:</strong> ${score.dateTime}, <strong>Score:</strong> ${score.rawScore}, <strong>Differential:</strong> ${score.handicapDifferential}`;
+//                    scoresContainer.appendChild(scoreDiv);
+//                });
+//            } else {
+//                scoresContainer.textContent = 'Incorrect User ID provided or less than 1 game played.';
+//            }
+//        })
+//        .catch(error => {
+//            document.getElementById('scoresResult').textContent = 'Failed to retrieve scores. Error: ' + error;
+//            console.error('Error fetching scores:', error);  // Log the error
+//        });
+//}
+
 function getScores(id) {
     axios.get(`https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/${id}/scores`)
         .then(response => {
             console.log('Data received:', response.data);  // Log the full data object
             const scoresContainer = document.getElementById('scoresResult');
             scoresContainer.innerHTML = '';  // Clear previous results
+            const data = response.data;
             const scores = response.data.scoreModels;
-            if (scores && scores.length > 0) {
+
+            if (data.error) {
+                scoresContainer.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`
+            } else {
                 scores.forEach(score => {
-                    console.log('Processing score:', score);  // Log each score
                     const scoreDiv = document.createElement('div');
                     scoreDiv.classList.add('score-entry');
-                    scoreDiv.innerHTML = `<strong>Date:</strong> ${score.dateTime}, <strong>Score:</strong> ${score.rawScore}, <strong>Differential:</strong> ${score.handicapDifferential}`;
+                    scoreDiv.innerHTML = `<strong>Date:</strong> ${score.dateTime}, <strong>Score:</strong> ${score.rawScore}, <strong>Differential</strong> ${score.handicapDifferential}`;
                     scoresContainer.appendChild(scoreDiv);
                 });
-            } else {
-                scoresContainer.textContent = 'Incorrect User ID provided or less than 1 game played.';
             }
         })
         .catch(error => {

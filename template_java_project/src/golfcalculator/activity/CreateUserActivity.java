@@ -44,15 +44,15 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
     @Override
     public CreateUserResult handleRequest(final CreateUserRequest createUserRequest, Context context) {
 
-        CreateUserResult result = CreateUserResult.builder().build();
+        CreateUserResult errorResult = CreateUserResult.builder().build();
 
         if (createUserRequest != null) {
             log.info("Received CreateUserRequest with userId: {} and email: {}", createUserRequest.getUserId(), createUserRequest.getEmail());
         } else {
             log.error("Received CreateUserRequest is null");
-            result.setError("IllegalStateException");
-            result.setErrorMessage("Please fill in required fields.");
-            return result;
+            errorResult.setError("IllegalStateException");
+            errorResult.setErrorMessage("Please fill in required fields.");
+            return errorResult;
             //throw new IllegalStateException("Error with Create User Request!");
         }
 
@@ -60,29 +60,29 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
         String email = createUserRequest.getEmail();
         if (userId == null || email == null) {
             log.error("Username or email were left null in request: user {}, email {}", userId, email);
-            result.setError("IllegalStateException");
-            result.setErrorMessage("Please fill in required fields.");
-            return result;
+            errorResult.setError("IllegalStateException");
+            errorResult.setErrorMessage("Please fill in required fields.");
+            return errorResult;
             //throw new IllegalArgumentException("Username or email cannot be left blank!");
         }
 
         if (!validateUserId(userId)) {
             log.error("InvalidUserNameException: Invalid userId requested {}", userId);
-            result.setError("InvalidUserNameException");
-            result.setErrorMessage("Invalid username: Please ensure your username is " +
+            errorResult.setError("InvalidUserNameException");
+            errorResult.setErrorMessage("Invalid username: Please ensure your username is " +
                             "between 3 and 20 characters long and contains only letters and numbers.");
-            return result;
+            return errorResult;
             //throw new InvalidUserNameException("Invalid username: Please ensure your username is" +
             //        "between 3 and 20 characters long and contains only letters and numbers.");
         }
 
         if (!validateEmail(email)) {
             log.error("InvalidEmailException: Invalid email requested {}", email);
-            result.setError("InvalidEmailException");
-            result.setErrorMessage("Invalid email: Please enter a valid email address with a " +
+            errorResult.setError("InvalidEmailException");
+            errorResult.setErrorMessage("Invalid email: Please enter a valid email address with a " +
                     "format like example@domain.com. Ensure it includes a domain name and a top-level" +
                     "domain (like .com, .org, etc).");
-            return result;
+            return errorResult;
             /*throw new InvalidEmailException("Invalid email: Please enter a valid email address with a" +
                     "format like example@domain.com. Ensure it includes a domain name and a top-level" +
                     "domain (like .com, .org, etc).");*/
@@ -90,17 +90,17 @@ public class CreateUserActivity implements RequestHandler<CreateUserRequest, Cre
 
         if (!userDao.isUnusedUserId(userId)) {
             log.error("UserIdAlreadyExistsException: UserId already exists {}", userId);
-            result.setError("UserIdAlreadyExistsException");
-            result.setErrorMessage("User Id already in use!");
-            return result;
+            errorResult.setError("UserIdAlreadyExistsException");
+            errorResult.setErrorMessage("User Id already in use!");
+            return errorResult;
             //throw new UserIdAlreadyExistsException("User Id already in use!");
         }
 
         if (!userDao.isUnusedEmail(email)) {
             log.error("EmailAlreadyExistsException: Email already exists {}", email);
-            result.setError("EmailAlreadyExistsException");
-            result.setErrorMessage("Email already in use!");
-            return result;
+            errorResult.setError("EmailAlreadyExistsException");
+            errorResult.setErrorMessage("Email already in use!");
+            return errorResult;
             //throw new EmailAlreadyExistsException("Email already in use!");
         }
 

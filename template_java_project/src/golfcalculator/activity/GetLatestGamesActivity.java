@@ -45,9 +45,14 @@ public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequ
     @Override
     public GetLatestGamesResult handleRequest(GetLatestGamesRequest getLatestGamesRequest, Context context) {
 
-        if (getLatestGamesRequest == null || getLatestGamesRequest.getUserId() == null) {
+        GetLatestGamesResult errorResult = GetLatestGamesResult.builder().build();
+
+        if (getLatestGamesRequest == null || getLatestGamesRequest.getUserId() == null || getLatestGamesRequest.getUserId().equals("")) {
             log.error("Request is null!");
-            throw new IllegalStateException("Cannot leave User ID blank!");
+            errorResult.setError("IllegalStateException");
+            errorResult.setErrorMessage("Cannot leave User ID blank!");
+            return errorResult;
+            //throw new IllegalStateException("Cannot leave User ID blank!");
         }
 
         log.info("GetLatestGamesRequest received: userID {}", getLatestGamesRequest.getUserId());
@@ -58,15 +63,25 @@ public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequ
             user = userDao.getUser(userId);
         } catch (UserNotFoundException ex) {
             log.error("User account not found {}", userId);
-            throw new UserNotFoundException("User account not found!");
+            errorResult.setError("UserNotFoundException");
+            errorResult.setErrorMessage("User account not found!");
+            return errorResult;
+            //throw new UserNotFoundException("User account not found!");
         } catch (DynamoDBMappingException ex) {
-            throw new DynamoDBMappingException();
+            log.error(ex);
+            errorResult.setError("UserNotFoundException");
+            errorResult.setErrorMessage("User account not found!");
+            return errorResult;
+            //throw new DynamoDBMappingException();
         }
 
         int gamesPlayed = user.getGamesPlayed();
         if (gamesPlayed == 0) {
             log.error("MinimumGamesNotPlayedException. Must play at least 1 game. gamesPlayed = {}", user.getGamesPlayed());
-            throw new MinimumGamesNotPlayedException("Must play at least 1 game to see latest games!");
+            errorResult.setError("MinimumGamesNotPlayedException");
+            errorResult.setErrorMessage("Must play at least 1 game to see latest games!");
+            return errorResult;
+            //throw new MinimumGamesNotPlayedException("Must play at least 1 game to see latest games!");
         }
 
         List<Score> scores;
@@ -75,7 +90,10 @@ public class GetLatestGamesActivity implements RequestHandler<GetLatestGamesRequ
             scores = scoreDao.getLatest5Games(userId, gamesPlayed);
         } catch (UnexpectedServerQueryException ex) {
             log.error("Server did not return between 1 and 5 games");
-            throw new UnexpectedServerQueryException("Server did not return expected amount of games.");
+            errorResult.setError("UnexpectedServerQueryException");
+            errorResult.setErrorMessage("Server did not return expected amount of games.");
+            return errorResult;
+            //throw new UnexpectedServerQueryException("Server did not return expected amount of games.");
         }
 
         log.info("Scores successfully returned to user");

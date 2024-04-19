@@ -5,6 +5,7 @@ import golfcalculator.dynamodb.UserDao;
 import golfcalculator.dynamodb.models.Score;
 import golfcalculator.dynamodb.models.User;
 import golfcalculator.exceptions.MinimumGamesNotPlayedException;
+import golfcalculator.exceptions.UnexpectedServerQueryException;
 import golfcalculator.exceptions.UserNotFoundException;
 import golfcalculator.models.requests.GetLatestGamesRequest;
 import golfcalculator.models.results.GetLatestGamesResult;
@@ -16,8 +17,9 @@ import org.mockito.Mock;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -31,9 +33,18 @@ public class GetLatestGamesActivityTest {
     private GetLatestGamesActivity getLatestGamesActivity;
 
     private GetLatestGamesRequest request;
+    private GetLatestGamesRequest nullRequest;
     private String userId = "userId";
     private User user;
     private List<Score> last5Scores;
+    private String illegalStateException = "IllegalStateException";
+    private String illegalStateExceptionMessage = "Cannot leave User ID blank!";
+    private String userNotFoundException = "UserNotFoundException";
+    private String userNotFoundExceptionMessage = "User account not found!";
+    private String minimumGamesNotPlayedException = "MinimumGamesNotPlayedException";
+    private String minimumGamesNotPlayedExceptionMessage = "Must play at least 1 game to see latest games!";
+    private String unexpectedServerQueryException = "UnexpectedServerQueryException";
+    private String unexpectedServerQueryExceptionMessage = "Server did not return expected amount of games.";
 
     @BeforeEach
     private void setUp() {
@@ -68,12 +79,24 @@ public class GetLatestGamesActivityTest {
     }
 
     @Test
+    void handleRequest_requestIsNull_throwsIllegalStateException() {
+
+        GetLatestGamesResult result = getLatestGamesActivity.handleRequest(nullRequest, null);
+
+        assertEquals(illegalStateException, result.getError());
+        assertEquals(illegalStateExceptionMessage, result.getErrorMessage());
+        assertNull(result.getScoreModels());
+    }
+
+    @Test
     void handleRequest_userIdNotFound_throwsUserNotFoundException() {
         when(userDao.getUser(userId)).thenThrow(UserNotFoundException.class);
 
-        assertThrows(UserNotFoundException.class, () -> {
-            getLatestGamesActivity.handleRequest(request, null);
-        });
+        GetLatestGamesResult result = getLatestGamesActivity.handleRequest(request, null);
+
+        assertEquals(userNotFoundException, result.getError());
+        assertEquals(userNotFoundExceptionMessage, result.getErrorMessage());
+        assertNull(result.getScoreModels());
     }
 
     @Test
@@ -81,8 +104,22 @@ public class GetLatestGamesActivityTest {
         user.setGamesPlayed(0);
         when(userDao.getUser(userId)).thenReturn(user);
 
-        assertThrows(MinimumGamesNotPlayedException.class, () -> {
-            getLatestGamesActivity.handleRequest(request, null);
-        });
+        GetLatestGamesResult result = getLatestGamesActivity.handleRequest(request, null);
+
+        assertEquals(minimumGamesNotPlayedException, result.getError());
+        assertEquals(minimumGamesNotPlayedExceptionMessage, result.getErrorMessage());
+        assertNull(result.getScoreModels());
+    }
+
+    @Test
+    void handleRequest_serverQueryError_throwsUnexpectedServerQueryException() {
+        when(userDao.getUser(anyString())).thenReturn(user);
+        when(scoreDao.getLatest5Games(anyString(), anyInt())).thenThrow(UnexpectedServerQueryException.class);
+
+        GetLatestGamesResult result = getLatestGamesActivity.handleRequest(request, null);
+
+        assertEquals(unexpectedServerQueryException, result.getError());
+        assertEquals(unexpectedServerQueryExceptionMessage, result.getErrorMessage());
+        assertNull(result.getScoreModels());
     }
 }

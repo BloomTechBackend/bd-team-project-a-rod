@@ -49,13 +49,13 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
     @Override
     public GetHandicapResult handleRequest(GetHandicapRequest getHandicapRequest, Context context) {
 
-        GetHandicapResult result = GetHandicapResult.builder().build();
+        GetHandicapResult errorResult = GetHandicapResult.builder().build();
 
         if (getHandicapRequest == null || getHandicapRequest.getUserId() == null || getHandicapRequest.getUserId().equals("")) {
             log.error("Request or User Id is null!");
-            result.setError("IllegalStateException");
-            result.setErrorMessage("Cannot leave User ID blank!");
-            return result;
+            errorResult.setError("IllegalStateException");
+            errorResult.setErrorMessage("Cannot leave User ID blank!");
+            return errorResult;
             //throw new IllegalStateException("Cannot leave User ID blank!");
         }
         log.info("Request received: {}", getHandicapRequest.getUserId());
@@ -66,22 +66,22 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
             user = userDao.getUser(userId);
         } catch (UserNotFoundException ex) {
             log.error("User account not found {}", userId, ex);
-            result.setError("UserNotFoundException");
-            result.setErrorMessage("User account not found!");
-            return result;
+            errorResult.setError("UserNotFoundException");
+            errorResult.setErrorMessage("User account not found!");
+            return errorResult;
             //throw new UserNotFoundException("User account not found!");
         } catch (DynamoDBMappingException e) {
             log.error("DynamoDBMappingException: User account not found!");
-            result.setError("UserNotFoundException");
-            result.setErrorMessage("User account not found!");
-            return result;
+            errorResult.setError("UserNotFoundException");
+            errorResult.setErrorMessage("User account not found!");
+            return errorResult;
         }
 
         if (user.getGamesPlayed() < 20) {
             log.error("MinimumGamesNotPlayedException: gamesPlayed = {}", user.getGamesPlayed());
-            result.setError("MinimumGamesNotPlayedException");
-            result.setErrorMessage("Must play at least 20 games for handicap index!");
-            return result;
+            errorResult.setError("MinimumGamesNotPlayedException");
+            errorResult.setErrorMessage("Must play at least 20 games for handicap index!");
+            return errorResult;
             //throw new MinimumGamesNotPlayedException("Must play at least 20 games for handicap index!");
         }
 
@@ -91,9 +91,9 @@ public class GetHandicapActivity implements RequestHandler<GetHandicapRequest, G
             scores = scoreDao.getLast20Games(userId);
         } catch (UnexpectedServerQueryException ex) {
             log.error("Server did not return expected 20 games", ex);
-            result.setError("UnexpectedServerQueryException");
-            result.setErrorMessage("Server did not return expected 20 games");
-            return result;
+            errorResult.setError("UnexpectedServerQueryException");
+            errorResult.setErrorMessage("Server did not return expected 20 games");
+            return errorResult;
             //throw new UnexpectedServerQueryException("Server did not return expected 20 games");
         }
 
