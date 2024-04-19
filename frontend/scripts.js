@@ -71,16 +71,38 @@ function createUser(userId, email) {
 //        })
 //}
 
+//function getHandicap(id) {
+//    axios.get(`https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/${id}/handicap`)
+//        .then(response => {
+//            const handicap = response.data.handicapIndex;  // Access the handicapIndex from the response
+//            const resultContainer = document.getElementById('handicapResult');
+//            resultContainer.innerHTML = ''; // Clear previous result
+//            if (handicap !== undefined) {  // Check if handicapIndex is defined
+//                resultContainer.innerHTML = `<strong>Handicap Index:</strong> ${handicap}`;
+//            } else {
+//                resultContainer.textContent = 'Incorrect User ID provided or less than 20 games were played.';
+//            }
+//        })
+//        .catch(error => {
+//            document.getElementById('handicapResult').textContent = 'Failed to retrieve handicap. Error: ' + error;
+//            console.error("Error retrieving handicap:", error);
+//        });
+//}
+
 function getHandicap(id) {
     axios.get(`https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/${id}/handicap`)
         .then(response => {
-            const handicap = response.data.handicapIndex;  // Access the handicapIndex from the response
+            const data = response.data;  // Access the complete response data
             const resultContainer = document.getElementById('handicapResult');
             resultContainer.innerHTML = ''; // Clear previous result
-            if (handicap !== undefined) {  // Check if handicapIndex is defined
-                resultContainer.innerHTML = `<strong>Handicap Index:</strong> ${handicap}`;
+
+            // Check if there is an error field in the response
+            if (data.error) {
+                // Display the error message from the response
+                resultContainer.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`;
             } else {
-                resultContainer.textContent = 'Incorrect User ID provided or less than 20 games were played.';
+                // Display the handicap index if no error is present
+                resultContainer.innerHTML = `<strong>Handicap Index:</strong> ${data.handicapIndex}`;
             }
         })
         .catch(error => {
@@ -88,6 +110,7 @@ function getHandicap(id) {
             console.error("Error retrieving handicap:", error);
         });
 }
+
 
 
 //function getScores(id) {
