@@ -36,18 +36,19 @@ document.addEventListener('DOMContentLoaded', function() {
 function createUser(userId, email) {
     axios.post('https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/', { userId, email })
         .then(response => {
-            const data = response.data; // Access the userModel from the response
+            const data = response.data; // Access the CreateUserResult attributes
             const resultContainer = document.getElementById('createUserResult');
             resultContainer.innerHTML = ''; // clear previous result
 
+            const messageDiv = document.createElement('div');
             if (data.error) {
-                resultContainer.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`;
+                messageDiv.classList.add('error-message');
+                messageDiv.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`;
             } else {
-                const userDiv = document.createElement('div');
-                userDiv.classList.add('user-entry');
-                userDiv.innerHTML = `<strong>User ID:</strong> ${data.userModel.userId}, <strong>Email:</strong> ${data.userModel.email}`;
-                resultContainer.appendChild(userDiv);
+                messageDiv.classList.add('user-entry');
+                messageDiv.innerHTML = `<strong>User ID:</strong> ${data.userModel.userId}, <strong>Email:</strong> ${data.userModel.email}`;
             }
+            resultContainer.appendChild(messageDiv);
         })
         .catch(error => {
             document.getElementById('createUserResult').textContent = 'Failed to create user. Error: ' + error;
@@ -62,17 +63,17 @@ function getHandicap(id) {
             const resultContainer = document.getElementById('handicapResult');
             resultContainer.innerHTML = ''; // Clear previous result
 
-            // Check if there is an error field in the response
+            const messageDiv = document.createElement('div');
             if (data.error) {
                 // Display the error message from the response
-                resultContainer.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`;
+                messageDiv.classList.add('error-message');
+                messageDiv.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`;
             } else {
                 // Display the handicap index if no error is present
-                const handDiv = document.createElement('div');
-                handDiv.classList.add('hand-entry');
-                handDiv.innerHTML = `<strong>Handicap Index:</strong> ${data.handicapIndex}`;
-                resultContainer.appendChild(handDiv);
+                messageDiv.classList.add('hand-entry');
+                messageDiv.innerHTML = `<strong>Handicap Index:</strong> ${data.handicapIndex}`;
             }
+            resultContainer.appendChild(messageDiv);
         })
         .catch(error => {
             document.getElementById('handicapResult').textContent = 'Failed to retrieve handicap. Error: ' + error;
@@ -90,7 +91,10 @@ function getScores(id) {
             const scores = response.data.scoreModels;
 
             if (data.error) {
-                scoresContainer.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('error-message');
+                messageDiv.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`;
+                scoresContainer.appendChild(messageDiv);
             } else {
                 scores.forEach(score => {
                     const scoreDiv = document.createElement('div');
@@ -106,27 +110,6 @@ function getScores(id) {
         });
 }
 
-//function submitScore(id, rawScore, courseRating, slopeRating, courseName) {
-//    axios.post(`https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/${id}/scores`, { rawScore, courseRating, slopeRating, courseName })
-//        .then(response => {
-//            const score = response.data.scoreModel;  // Adjusted to access scoreModel
-//            const resultContainer = document.getElementById('submitScoreResult');
-//            resultContainer.innerHTML = ''; // Clear previous result
-//            if (score) {
-//                const scoreDiv = document.createElement('div');
-//                scoreDiv.classList.add('score-entry');
-//                scoreDiv.innerHTML = `<strong>Date:</strong> ${score.dateTime}, <strong>Score:</strong> ${score.rawScore}, <strong>Differential:</strong> ${score.handicapDifferential}`;
-//                resultContainer.appendChild(scoreDiv);
-//            } else {
-//                resultContainer.textContent = 'Incorrect User ID provided or Raw Score left blank.';
-//            }
-//        })
-//        .catch(error => {
-//            document.getElementById('submitScoreResult').textContent = 'Failed to submit score. Error: ' + error;
-//            console.error("Error submitting score:", error);
-//        });
-//}
-
 function submitScore(id, rawScore, courseRating, slopeRating, courseName) {
     axios.post(`https://fab1jynslk.execute-api.us-west-2.amazonaws.com/prod/golfcalculator/${id}/scores`, { rawScore, courseRating, slopeRating, courseName })
         .then(response => {
@@ -135,14 +118,15 @@ function submitScore(id, rawScore, courseRating, slopeRating, courseName) {
             const resultContainer = document.getElementById('submitScoreResult');
             resultContainer.innerHTML = ''; // Clear previous result
 
+            const messageDiv = document.createElement('div');
             if (data.error) {
-                resultContainer.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`
+                messageDiv.classList.add('error-message');
+                messageDiv.innerHTML = `<strong>Error:</strong> ${data.errorMessage}`;
             } else {
-                const scoreDiv = document.createElement('div');
-                scoreDiv.classList.add('score-entry');
-                scoreDiv.innerHTML = `<strong>Date:</strong> ${score.dateTime}, <strong>Score:</strong> ${score.rawScore}, <strong>Differential:</strong> ${score.handicapDifferential}`;
-                resultContainer.appendChild(scoreDiv);
+                messageDiv.classList.add('score-entry');
+                messageDiv.innerHTML = `<strong>Date:</strong> ${score.dateTime}, <strong>Score:</strong> ${score.rawScore}, <strong>Differential:</strong> ${score.handicapDifferential}`;
             }
+            resultContainer.appendChild(messageDiv);
         })
         .catch(error => {
             document.getElementById('submitScoreResult').textContent = 'Failed to submit score. Error: ' + error;
