@@ -39,7 +39,8 @@ public class ModelConverter {
         return ScoreModel.builder()
                 .withDateTime(userFriendlyDate)
                 .withRawScore(score.getRawScore())
-                .withHandicapDifferential(score.getHandicapDifferential())
+                // rounding differential to the nearest tenth
+                .withHandicapDifferential(Math.round(score.getHandicapDifferential() * 10) / 10.0)
                 .build();
     }
 

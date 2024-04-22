@@ -14,8 +14,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import javax.inject.Inject;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -70,7 +68,7 @@ public class CreateNewScoreActivityTest {
         verify(scoreDao).saveNewScore(scoreCaptor.capture());
         assertEquals(newGamesPlayed, validUser.getGamesPlayed());
         assertNotNull(scoreResult.getScoreModel().getDateTime());
-        assertEquals(validScoreResultIndex, scoreResult.getScoreModel().getHandicapDifferential(), 0.01);
+        assertEquals(validScoreResultIndex, scoreResult.getScoreModel().getHandicapDifferential(), 0.1);
     }
 
     @Test

@@ -26,16 +26,13 @@ public class HandicapCalculator {
      */
     public static double calculateHandicapIndex(List<Score> scores) {
 
-        List<Double> best8HandicapDifferentials = scores.stream()
-                .map(Score::getHandicapDifferential)
-                .sorted((a, b) -> Double.compare(a, b))
+        double average = scores.stream()
+                .mapToDouble(Score::getHandicapDifferential)
+                .sorted()
                 .limit(8)
-                .collect(Collectors.toList());
+                .average()
+                .orElse(0);
 
-        double sum = 0;
-        for (double d : best8HandicapDifferentials) {
-            sum += d;
-        }
-        return sum / 8;
+        return Math.round(average * 10) / 10.0;
     }
 }
